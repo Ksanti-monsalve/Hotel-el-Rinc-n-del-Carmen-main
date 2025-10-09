@@ -197,6 +197,7 @@ Hotel-el-Rinc-n-del-Carmen-main/
 - **Diseño responsivo** optimizado
 - **Animaciones específicas** de cada sección
 
+
 ## 👨‍💻 Autor
 
 **Desarrollado por**: Kevin Santiago Pinto Monsalve  
