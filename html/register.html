@@ -122,7 +122,7 @@
         
         function handleLogout() {
             if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
-                localStorage.setItem('currentUser', 'null');
+                logout();
                 showAlert('Has cerrado sesión correctamente.', 'info');
                 setTimeout(() => {
                     window.location.href = '../index.html';

@@ -87,3 +87,36 @@ function createAdminNow() {
         showAlert('❌ Error al crear admin: ' + error.message, 'error');
     }
 }
+
+// Función para forzar la creación del admin (usando la función global)
+function forceCreateAdmin() {
+    try {
+        const users = JSON.parse(localStorage.getItem('users') || '[]');
+        
+        // Remover admin existente si existe
+        const filteredUsers = users.filter(u => u.email !== 'admin@hotel.com');
+        
+        const adminUser = {
+            id: 'admin-' + Date.now(),
+            fullName: 'Administrador del Hotel',
+            identification: '000000000',
+            nationality: 'Colombia',
+            email: 'admin@hotel.com',
+            phone: '+57 301 333 7644',
+            password: 'admin123',
+            role: 'admin'
+        };
+        
+        filteredUsers.push(adminUser);
+        localStorage.setItem('users', JSON.stringify(filteredUsers));
+        
+        console.log('✅ Admin recreado exitosamente:', adminUser);
+        showAlert('✅ Admin recreado exitosamente! Usa: admin@hotel.com / admin123', 'success');
+        
+        return true;
+    } catch (error) {
+        console.error('❌ Error al recrear admin:', error);
+        showAlert('❌ Error al recrear admin: ' + error.message, 'error');
+        return false;
+    }
+}

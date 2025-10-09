@@ -81,45 +81,45 @@ if (!localStorage.getItem('users')) {
 
 // Inicializar usuario actual si no existe
 if (!localStorage.getItem('currentUser')) {
-    localStorage.setItem('currentUser', 'null');
+    localStorage.removeItem('currentUser');
 }
 
 // Funciones de autenticación
 function login(email, password) {
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    
-    // Debug: mostrar información
-    console.log('Usuarios en sistema:', users.length);
-    console.log('Email buscado:', email);
-    console.log('Password buscado:', password);
-    
-    // Buscar usuario
-    const user = users.find(u => {
-        console.log('Comparando con:', u.email, u.password);
-        return u.email === email && u.password === password;
-    });
-    
-    if (user) {
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        console.log('Login exitoso:', user);
-        return true;
+    try {
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        console.log('🔍 Buscando usuario con email:', email);
+        console.log('👥 Usuarios disponibles:', users.map(u => ({ email: u.email, role: u.role })));
+        
+        // Buscar usuario
+        const user = users.find(u => u.email === email && u.password === password);
+        
+        if (user) {
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            console.log('✅ Login exitoso para:', user.fullName, 'Rol:', user.role);
+            return true;
+        } else {
+            console.log('❌ Usuario no encontrado o contraseña incorrecta');
+            return false;
+        }
+    } catch (error) {
+        console.error('❌ Error en login:', error);
+        return false;
     }
-    
-    console.log('Login fallido - usuario no encontrado');
-    return false;
 }
 
 function logout() {
-    localStorage.setItem('currentUser', 'null');
+    localStorage.removeItem('currentUser');
 }
 
 // Función para obtener el usuario actual
 function getCurrentUser() {
     const currentUser = localStorage.getItem('currentUser');
-    if (currentUser && currentUser !== 'null') {
+    if (currentUser && currentUser !== 'null' && currentUser !== null) {
         try {
             return JSON.parse(currentUser);
         } catch (e) {
+            console.error('Error parsing currentUser:', e);
             return null;
         }
     }
@@ -164,27 +164,6 @@ function register(userData) {
     localStorage.setItem('users', JSON.stringify(users));
     
     return { success: true, message: 'Usuario registrado exitosamente' };
-}
-
-function getCurrentUser() {
-    const currentUser = localStorage.getItem('currentUser');
-    if (currentUser && currentUser !== 'null') {
-        try {
-            return JSON.parse(currentUser);
-        } catch (e) {
-            return null;
-        }
-    }
-    return null;
-}
-
-function isLoggedIn() {
-    return getCurrentUser() !== null;
-}
-
-function isAdmin() {
-    const user = getCurrentUser();
-    return user && user.role === 'admin';
 }
 
 // Funciones de reservas
@@ -264,25 +243,34 @@ function showAlert(message, type = 'info') {
 
 // Función para asegurar que el admin existe
 function ensureAdminExists() {
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    const adminExists = users.some(u => u.email === 'admin@hotel.com');
-    
-    if (!adminExists) {
-        const adminUser = {
-            id: 'admin-' + Date.now(),
-            fullName: 'Administrador del Hotel',
-            identification: '000000000',
-            nationality: 'Colombia',
-            email: 'admin@hotel.com',
-            phone: '+57 301 333 7644',
-            password: 'admin123',
-            role: 'admin'
-        };
-        users.push(adminUser);
-        localStorage.setItem('users', JSON.stringify(users));
-        console.log('Admin creado automáticamente:', adminUser);
+    try {
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        const adminExists = users.some(u => u.email === 'admin@hotel.com');
+        
+        if (!adminExists) {
+            const adminUser = {
+                id: 'admin-' + Date.now(),
+                fullName: 'Administrador del Hotel',
+                identification: '000000000',
+                nationality: 'Colombia',
+                email: 'admin@hotel.com',
+                phone: '+57 301 333 7644',
+                password: 'admin123',
+                role: 'admin'
+            };
+            users.push(adminUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            console.log('✅ Admin creado automáticamente:', adminUser);
+            console.log('📧 Email: admin@hotel.com');
+            console.log('🔑 Contraseña: admin123');
+        } else {
+            console.log('✅ Admin ya existe en el sistema');
+        }
+    } catch (error) {
+        console.error('❌ Error al crear admin:', error);
     }
 }
+
 
 // Función para actualizar información de habitaciones
 function updateRoomsInfo() {
@@ -395,28 +383,6 @@ function showAlert(message, type = 'info') {
     }, 4000);
 }
 
-// Asegurar que el admin existe
-function ensureAdminExists() {
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    const adminExists = users.some(u => u.email === 'admin@hotel.com');
-    
-    if (!adminExists) {
-        const adminUser = {
-            id: 'admin-' + Date.now(),
-            fullName: 'Administrador del Hotel',
-            identification: '000000000',
-            nationality: 'Colombia',
-            email: 'admin@hotel.com',
-            phone: '+57 301 333 7644',
-            password: 'admin123',
-            role: 'admin'
-        };
-        
-        users.push(adminUser);
-        localStorage.setItem('users', JSON.stringify(users));
-        console.log('Admin creado automáticamente:', adminUser);
-    }
-}
 
 // Escuchar cambios en localStorage para actualizar la interfaz
 window.addEventListener('storage', (e) => {

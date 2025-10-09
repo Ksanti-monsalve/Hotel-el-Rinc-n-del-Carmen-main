@@ -152,7 +152,7 @@ function getAvailableRooms(checkIn, checkOut, guests) {
 
 function createRoomCard(room, checkIn, checkOut, guests) {
     const nights = Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24));
-    const totalPrice = nights * room.pricePerNight;
+    const totalPrice = nights * (room.pricePerNight || 0);
     
     // Verificar si el usuario actual es administrador
     const currentUser = localStorage.getItem('currentUser');
@@ -161,25 +161,25 @@ function createRoomCard(room, checkIn, checkOut, guests) {
     const card = document.createElement('div');
     card.className = 'room-card';
     card.innerHTML = `
-        <img class="room-image" src="${room.image}" alt="${room.name}" onerror="this.src='https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=400'">
+        <img class="room-image" src="${room.image || 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=400'}" alt="${room.name || 'Habitación'}" onerror="this.src='https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=400'">
         
         <div class="room-content">
             <div class="room-header">
                 <div>
-                    <h3 class="room-title">${room.name}</h3>
-                    <p class="room-description">${room.description}</p>
+                    <h3 class="room-title">${room.name || 'Habitación sin nombre'}</h3>
+                    <p class="room-description">${room.description || 'Descripción no disponible'}</p>
                 </div>
                 <div class="room-price">
-                    $${room.pricePerNight.toLocaleString()}<span style="font-size: 0.9rem; font-weight: 400;">/noche</span>
+                    $${(room.pricePerNight || 0).toLocaleString()}<span style="font-size: 0.9rem; font-weight: 400;">/noche</span>
                 </div>
             </div>
             
             <div class="room-details">
                 <div class="detail-item">
-                    <span>🛏️ ${room.beds} cama${room.beds > 1 ? 's' : ''}</span>
+                    <span>🛏️ ${room.beds || 1} cama${(room.beds || 1) > 1 ? 's' : ''}</span>
                 </div>
                 <div class="detail-item">
-                    <span>👥 Máx. ${room.maxGuests} huéspedes</span>
+                    <span>👥 Máx. ${room.maxGuests || 1} huéspedes</span>
                 </div>
                 <div class="detail-item">
                     <span>📅 ${formatDate(checkIn)} - ${formatDate(checkOut)}</span>
@@ -192,7 +192,7 @@ function createRoomCard(room, checkIn, checkOut, guests) {
             <div class="room-services">
                 <p class="services-title">Servicios incluidos:</p>
                 <div class="services-list">
-                    ${room.services.map(service => `<span class="service-tag">✓ ${service}</span>`).join('')}
+                    ${(room.services && Array.isArray(room.services)) ? room.services.map(service => `<span class="service-tag">✓ ${service}</span>`).join('') : '<span class="service-tag">✓ Sin servicios específicos</span>'}
                 </div>
             </div>
             
@@ -208,7 +208,7 @@ function createRoomCard(room, checkIn, checkOut, guests) {
                         <p style="color: #999; font-size: 0.85rem; margin-top: 0.5rem;">Los administradores no pueden hacer reservas</p>
                     </div>
                 ` : `
-                    <button class="btn-reserve" data-room-id="${room.id}" data-check-in="${checkIn}" data-check-out="${checkOut}" data-guests="${guests}" data-total="${totalPrice}">
+                    <button class="btn-reserve" data-room-id="${room.id || ''}" data-check-in="${checkIn}" data-check-out="${checkOut}" data-guests="${guests}" data-total="${totalPrice}">
                         Reservar Ahora
                     </button>
                 `}
@@ -289,7 +289,7 @@ function handleReservation(roomId, checkIn, checkOut, guests, totalPrice, room) 
         userId: user.id,
         userName: user.fullName,
         roomId: roomId,
-        roomName: room.name,
+        roomName: room.name || 'Habitación sin nombre',
         checkIn: checkIn,
         checkOut: checkOut,
         guests: guests,

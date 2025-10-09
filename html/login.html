@@ -40,6 +40,12 @@
             
             <div class="login-footer">
                 <p>¿No tienes cuenta? <a href="register.html">Regístrate aquí</a></p>
+                <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e0e0e0;">
+                    <p style="font-size: 0.9rem; color: #666; margin-bottom: 0.5rem;">¿Problemas con el administrador?</p>
+                    <button type="button" onclick="forceCreateAdmin()" class="btn-admin-create" style="background: #6c757d; color: white; padding: 0.5rem 1rem; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem;">
+                        🔧 Crear Admin
+                    </button>
+                </div>
             </div>
         </div>
     </main>
@@ -96,7 +102,7 @@
         
         function handleLogout() {
             if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
-                localStorage.setItem('currentUser', 'null');
+                logout();
                 showAlert('Has cerrado sesión correctamente.', 'info');
                 setTimeout(() => {
                     window.location.href = '../index.html';
