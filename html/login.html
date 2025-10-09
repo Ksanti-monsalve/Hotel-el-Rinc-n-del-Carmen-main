@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Hotel el Rincón del Carmen</title>
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏨</text></svg>">
+    <link rel="stylesheet" href="../css/common.css?v=2.0">
+    <link rel="stylesheet" href="../css/login.css?v=2.0">
+</head>
+<body>
+    <header id="dynamic-header">
+        <!-- El header se actualizará dinámicamente aquí -->
+    </header>
+
+    <main class="login">
+        <div class="login-container">
+            <div class="login-header">
+                <div class="login-icon">🏨</div>
+                <h1>Bienvenido de Nuevo</h1>
+                <p class="login-subtitle">Inicia sesión para continuar con tu reserva</p>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group-login">
+                    <label for="email">Correo Electrónico</label>
+                    <input type="email" id="email" name="email" placeholder="tu@email.com" required>
+                </div>
+                
+                <div class="form-group-login">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" placeholder="Ingresa tu contraseña" required>
+                </div>
+                
+                <button type="submit" class="btn-login">
+                    <span>Iniciar Sesión</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+            </form>
+            
+            <div class="login-footer">
+                <p>¿No tienes cuenta? <a href="register.html">Regístrate aquí</a></p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Hotel el Rincón del Carmen</h3>
+                <p>Tu refugio perfecto en la ciudad</p>
+            </div>
+            <div class="footer-section">
+                <h4>Contacto</h4>
+                <p>📞 +57 301 333 7644</p>
+                <p>✉️ Carmen@rincondelcarmen.com</p>
+                <p>📍 Calle carmen #224</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Hotel el Rincón del Carmen. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/components/login.js"></script>
+    
+    <script>
+        // Función para actualizar el header dinámicamente
+        function updateHeader() {
+            const currentUser = getCurrentUser();
+            const isAdmin = currentUser && currentUser.role === 'admin';
+            const isLoggedIn = currentUser !== null;
+            const header = document.getElementById('dynamic-header');
+            
+            if (header) {
+                header.innerHTML = `
+                    <nav>
+                        <div class="logo"> Hotel el Rincón del Carmen</div>
+                        <ul>
+                            <li><a href="../index.html">Inicio</a></li>
+                            <li><a href="disponibilidad.html">Disponibilidad</a></li>
+                            <li><a href="ubicacion.html">Ubicación</a></li>
+                            ${isLoggedIn ? `
+                                <li><span class="user-welcome">Hola, ${currentUser.fullName}</span></li>
+                                ${isAdmin ? `<li><a href="admin.html">Panel Admin</a></li>` : `<li><a href="mis-reservas.html">Mis Reservas</a></li>`}
+                                <li><a href="#" onclick="handleLogout()">Cerrar Sesión</a></li>
+                            ` : `
+                                <li><a href="login.html">Iniciar Sesión</a></li>
+                            `}
+                        </ul>
+                    </nav>
+                `;
+            }
+        }
+        
+        function handleLogout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                localStorage.setItem('currentUser', 'null');
+                showAlert('Has cerrado sesión correctamente.', 'info');
+                setTimeout(() => {
+                    window.location.href = '../index.html';
+                }, 1500);
+            }
+        }
+        
+        // Actualizar header cuando se carga la página
+        document.addEventListener('DOMContentLoaded', updateHeader);
+        
+        // Escuchar cambios en la sesión
+        window.addEventListener('storage', updateHeader);
+        window.addEventListener('userLoggedIn', updateHeader);
+        window.addEventListener('userLoggedOut', updateHeader);
+    </script>
+</body>
+</html>

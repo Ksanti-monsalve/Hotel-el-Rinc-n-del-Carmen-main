@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrarse - Hotel el Rincón del Carmen</title>
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏨</text></svg>">
+    <link rel="stylesheet" href="../css/common.css?v=2.0">
+    <link rel="stylesheet" href="../css/register.css?v=2.0">
+</head>
+<body>
+    <header id="dynamic-header">
+        <!-- El header se actualizará dinámicamente aquí -->
+    </header>
+
+    <main class="register">
+        <div class="register-container">
+            <div class="register-header">
+                <div class="register-icon">🏨</div>
+                <h1>Únete a Nosotros</h1>
+                <p class="register-subtitle">Crea tu cuenta y disfruta de todos nuestros servicios</p>
+            </div>
+
+            <form id="registerForm" class="register-form">
+                <div class="form-row-register">
+                    <div class="form-group-register">
+            <label for="fullName">Nombre Completo</label>
+                        <input type="text" id="fullName" name="fullName" placeholder="Ej: Juan Pérez García" required>
+                    </div>
+            
+                    <div class="form-group-register">
+            <label for="identification">Número de Identificación</label>
+            <input type="text" id="identification" name="identification" placeholder="1234567890" required>
+                    </div>
+                </div>
+            
+                <div class="form-row-register">
+                    <div class="form-group-register">
+            <label for="nationality">Nacionalidad</label>
+                        <input type="text" id="nationality" name="nationality" placeholder="Ej: Colombiano" required>
+                    </div>
+            
+                    <div class="form-group-register">
+                        <label for="email">Correo Electrónico</label>
+            <input type="email" id="email" name="email" placeholder="tu@email.com" required>
+                    </div>
+                </div>
+            
+                <div class="form-row-register">
+                    <div class="form-group-register">
+            <label for="phone">Teléfono</label>
+                        <input type="tel" id="phone" name="phone" placeholder="+57 300 123 4567" required>
+                    </div>
+            
+                    <div class="form-group-register">
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" name="password" placeholder="Mínimo 6 caracteres" minlength="6" required>
+                    </div>
+                </div>
+            
+                <button type="submit" class="btn-register">
+                    <span>Crear Cuenta</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+        </form>
+
+            <div class="register-footer">
+        <p>¿Ya tienes cuenta? <a href="login.html">Inicia sesión aquí</a></p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Hotel el Rincón del Carmen</h3>
+                <p>Tu refugio perfecto en la ciudad</p>
+            </div>
+            <div class="footer-section">
+                <h4>Contacto</h4>
+                <p>📞 +57 301 333 7644</p>
+                <p>✉️ Carmen@rincondelcarmen.com</p>
+                <p>📍 Calle carmen #224</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Hotel el Rincón del Carmen. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/components/register.js"></script>
+    
+    <script>
+        // Función para actualizar el header dinámicamente
+        function updateHeader() {
+            const currentUser = getCurrentUser();
+            const isAdmin = currentUser && currentUser.role === 'admin';
+            const isLoggedIn = currentUser !== null;
+            const header = document.getElementById('dynamic-header');
+            
+            if (header) {
+                header.innerHTML = `
+                    <nav>
+                        <div class="logo"> Hotel el Rincón del Carmen</div>
+                        <ul>
+                            <li><a href="../index.html">Inicio</a></li>
+                            <li><a href="disponibilidad.html">Disponibilidad</a></li>
+                            <li><a href="ubicacion.html">Ubicación</a></li>
+                            ${isLoggedIn ? `
+                                <li><span class="user-welcome">Hola, ${currentUser.fullName}</span></li>
+                                ${isAdmin ? `<li><a href="admin.html">Panel Admin</a></li>` : `<li><a href="mis-reservas.html">Mis Reservas</a></li>`}
+                                <li><a href="#" onclick="handleLogout()">Cerrar Sesión</a></li>
+                            ` : `
+                                <li><a href="login.html">Iniciar Sesión</a></li>
+                            `}
+                        </ul>
+                    </nav>
+                `;
+            }
+        }
+        
+        function handleLogout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                localStorage.setItem('currentUser', 'null');
+                showAlert('Has cerrado sesión correctamente.', 'info');
+                setTimeout(() => {
+                    window.location.href = '../index.html';
+                }, 1500);
+            }
+        }
+        
+        // Actualizar header cuando se carga la página
+        document.addEventListener('DOMContentLoaded', updateHeader);
+        
+        // Escuchar cambios en la sesión
+        window.addEventListener('storage', updateHeader);
+        window.addEventListener('userLoggedIn', updateHeader);
+        window.addEventListener('userLoggedOut', updateHeader);
+    </script>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel el Rincón del Carmen - Inicio</title>
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏨</text></svg>">
+    <link rel="stylesheet" href="css/common.css?v=2.0">
+    <link rel="stylesheet" href="css/index.css?v=3.0&t=20241220">
+    <style>
+        /* ESTILOS CRÍTICOS PARA HABITACIONES DESTACADAS - FORZAR VISUALIZACIÓN */
+        .rooms-carousel {
+            padding: 6rem 5% !important;
+            background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 50%, #ffffff 100%) !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+        
+        .rooms-carousel::before {
+            content: '' !important;
+            position: absolute !important;
+            top: -50% !important;
+            right: -10% !important;
+            width: 500px !important;
+            height: 500px !important;
+            background: radial-gradient(circle, rgba(224, 122, 95, 0.08) 0%, transparent 70%) !important;
+            border-radius: 50% !important;
+            animation: float 20s ease-in-out infinite !important;
+        }
+        
+        .rooms-carousel h2 {
+            font-size: 3.2rem !important;
+            font-weight: 800 !important;
+            color: #000000 !important;
+            margin-bottom: 1.2rem !important;
+            text-align: center !important;
+            position: relative !important;
+            display: inline-block !important;
+        }
+        
+        .rooms-carousel h2::after {
+            content: '' !important;
+            position: absolute !important;
+            bottom: -10px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            width: 80px !important;
+            height: 4px !important;
+            background: linear-gradient(90deg, #e07a5f, #000000) !important;
+            border-radius: 2px !important;
+        }
+        
+        .section-subtitle {
+            font-size: 1.2rem !important;
+            color: #666 !important;
+            text-align: center !important;
+            max-width: 650px !important;
+            margin: 1.5rem auto 0 !important;
+            line-height: 1.7 !important;
+            font-weight: 300 !important;
+        }
+        
+        .room-card {
+            background: #fff !important;
+            border-radius: 20px !important;
+            overflow: hidden !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            border: 1px solid rgba(0, 0, 0, 0.04) !important;
+        }
+        
+        .room-card:hover {
+            transform: translateY(-12px) scale(1.02) !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        .room-badge {
+            position: absolute !important;
+            top: 15px !important;
+            right: 15px !important;
+            background: linear-gradient(135deg, #e07a5f, #c65d42) !important;
+            color: white !important;
+            padding: 8px 16px !important;
+            border-radius: 25px !important;
+            font-size: 0.85rem !important;
+            font-weight: 700 !important;
+            box-shadow: 0 4px 15px rgba(224, 122, 95, 0.3) !important;
+            animation: pulse 2s ease-in-out infinite !important;
+        }
+        
+        .room-price {
+            font-size: 2.2rem !important;
+            font-weight: 800 !important;
+            background: linear-gradient(135deg, #e07a5f, #c65d42) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+            line-height: 1 !important;
+        }
+        
+        .btn-reserve-room {
+            background: linear-gradient(135deg, #000000, #333333) !important;
+            color: white !important;
+            padding: 12px 24px !important;
+            border-radius: 12px !important;
+            text-decoration: none !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+        
+        .btn-reserve-room:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 25px rgba(44, 95, 45, 0.3) !important;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, -30px); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    </style>
+</head>
+<body>
+    <header id="dynamic-header">
+        <!-- El header se actualizará dinámicamente aquí -->
+    </header>
+
+    <main class="landing">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>Bienvenido a Hotel el Rincón del Carmen</h1>
+            <p>Tu refugio perfecto donde la comodidad se encuentra con la naturaleza.</p>
+            <a href="html/disponibilidad.html" class="btn">Ver Disponibilidad</a>
+        </section>
+
+        <!-- Servicios del Hotel -->
+        <section class="features">
+            <h2>Nuestros Servicios</h2>
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400" alt="Restaurante">
+                    <h3>Restaurante Gourmet</h3>
+                    <p>Disfruta de exquisitos platos preparados por chefs expertos.</p>
+                </div>
+                <div class="feature-item">
+                    <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=400" alt="Spa">
+                    <h3>Spa & Bienestar</h3>
+                    <p>Relájate en nuestro spa con tratamientos exclusivos.</p>
+                </div>
+                <div class="feature-item">
+                    <img src="https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?w=400" alt="Piscina">
+                    <h3>Zonas Húmedas</h3>
+                    <p>Piscina climatizada y jacuzzi para tu disfrute.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Carrusel de Habitaciones -->
+        <section class="rooms-carousel">
+            <h2>Habitaciones Destacadas</h2>
+            <p class="section-subtitle">Descubre nuestras elegantes habitaciones diseñadas para tu máximo confort</p>
+            <div id="carousel" class="carousel">
+                <!-- Las habitaciones se cargarán aquí con JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Hotel el Rincón del Carmen</h3>
+                <p>Tu refugio perfecto en la ciudad</p>
+            </div>
+            <div class="footer-section">
+                <h4>Contacto</h4>
+                <p>📞 +57 301 333 7644</p>
+                <p>✉️ Carmen@rincondelcarmen.com</p>
+                <p>📍 Calle carmen #224</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Hotel el Rincón del Carmen. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script src="js/components/index-carousel.js"></script>
+    
+    <script>
+        // Función para actualizar el header dinámicamente
+        function updateHeader() {
+            const currentUser = getCurrentUser();
+            const isAdmin = currentUser && currentUser.role === 'admin';
+            const isLoggedIn = currentUser !== null;
+            const header = document.getElementById('dynamic-header');
+            
+            if (header) {
+                header.innerHTML = `
+                    <nav>
+                        <div class="logo"> Hotel el Rincón del Carmen</div>
+                        <ul>
+                            <li><a href="index.html">Inicio</a></li>
+                            <li><a href="html/disponibilidad.html">Disponibilidad</a></li>
+                            <li><a href="html/ubicacion.html">Ubicación</a></li>
+                            ${isLoggedIn ? `
+                                <li><span class="user-welcome">Hola, ${currentUser.fullName}</span></li>
+                                ${isAdmin ? `<li><a href="html/admin.html">Panel Admin</a></li>` : `<li><a href="html/mis-reservas.html">Mis Reservas</a></li>`}
+                                <li><a href="#" onclick="handleLogout()">Cerrar Sesión</a></li>
+                            ` : `
+                                <li><a href="html/login.html">Iniciar Sesión</a></li>
+                            `}
+                        </ul>
+                    </nav>
+                `;
+            }
+        }
+        
+        function handleLogout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                localStorage.setItem('currentUser', 'null');
+                showAlert('Has cerrado sesión correctamente.', 'info');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            }
+        }
+        
+        // Actualizar header cuando se carga la página
+        document.addEventListener('DOMContentLoaded', updateHeader);
+        
+        // Escuchar cambios en la sesión
+        window.addEventListener('storage', updateHeader);
+        window.addEventListener('userLoggedIn', updateHeader);
+        window.addEventListener('userLoggedOut', updateHeader);
+    </script>
+</body>
+</html>

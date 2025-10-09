@@ -1,0 +1,266 @@
+/* CSS específico para ubicacion.html */
+
+/* LOCATION STYLES */
+.location-elegant {
+    min-height: 100vh;
+}
+
+.location-hero {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+    height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-overlay {
+    text-align: center;
+    color: var(--color-light);
+    z-index: 2;
+    position: relative;
+}
+
+.elegant-title {
+    font-size: 4rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.elegant-subtitle {
+    font-size: 1.5rem;
+    opacity: 0.9;
+    font-weight: 300;
+}
+
+.elegant-contact-section {
+    padding: 6rem 5%;
+    background: var(--color-light);
+}
+
+.contact-intro {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+}
+
+.section-description {
+    font-size: 1.1rem;
+    color: var(--color-text);
+    opacity: 0.8;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.elegant-contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.elegant-contact-card {
+    background: var(--color-light);
+    border-radius: var(--radius);
+    padding: 2.5rem;
+    text-align: center;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    border: 1px solid rgba(44, 95, 45, 0.1);
+}
+
+.elegant-contact-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-hover);
+}
+
+.card-icon-wrapper {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+}
+
+.card-icon {
+    font-size: 2rem;
+}
+
+.elegant-contact-card h3 {
+    font-size: 1.5rem;
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+}
+
+.card-detail {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 0.5rem;
+}
+
+.card-detail-sub {
+    font-size: 0.9rem;
+    color: var(--color-text);
+    opacity: 0.7;
+}
+
+.elegant-map-section {
+    padding: 6rem 5%;
+    background: var(--color-bg);
+}
+
+.map-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.map-container-elegant {
+    max-width: 1000px;
+    margin: 0 auto;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-hover);
+}
+
+.map-container-elegant iframe {
+    width: 100%;
+    height: 500px;
+    border: none;
+}
+
+.contact-form-section {
+    padding: 6rem 5%;
+    background: var(--color-light);
+}
+
+.contact-form-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.form-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.contact-form-header h2 {
+    font-size: 2.5rem;
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+}
+
+.form-subtitle {
+    font-size: 1.1rem;
+    color: var(--color-text);
+    opacity: 0.8;
+}
+
+.modern-contact-form {
+    max-width: 800px;
+    margin: 0 auto;
+    background: var(--color-light);
+    padding: 3rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.form-row-contact {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-group-contact {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group-contact label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    font-size: 0.95rem;
+}
+
+.form-group-contact input,
+.form-group-contact textarea {
+    padding: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: var(--radius);
+    font-size: 1rem;
+    transition: var(--transition);
+    resize: vertical;
+}
+
+.form-group-contact input:focus,
+.form-group-contact textarea:focus {
+    border-color: var(--color-primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(44, 95, 45, 0.1);
+}
+
+.form-group-contact textarea {
+    min-height: 120px;
+    border-radius: 0;
+}
+
+.btn-send-message {
+    background: var(--color-primary);
+    color: var(--color-light);
+    padding: 1rem 2rem;
+    border-radius: var(--radius);
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.btn-send-message:hover {
+    background: var(--color-accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .elegant-title {
+        font-size: 2.5rem;
+    }
+    
+    .elegant-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .elegant-contact-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-row-contact {
+        grid-template-columns: 1fr;
+    }
+    
+    .modern-contact-form {
+        padding: 2rem;
+        margin: 1rem;
+    }
+}
+

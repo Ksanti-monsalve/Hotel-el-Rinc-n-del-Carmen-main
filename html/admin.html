@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administrador - Hotel el Rincón del Carmen</title>
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏨</text></svg>">
+    <link rel="stylesheet" href="../css/common.css?v=2.0">
+    <link rel="stylesheet" href="../css/admin.css?v=2.0">
+</head>
+<body>
+    <header id="dynamic-header">
+        <!-- El header se actualizará dinámicamente aquí -->
+    </header>
+
+    <main class="admin">
+        <div class="admin-header">
+            <h1>Panel de Administrador</h1>
+            <p>Gestiona habitaciones y reservas del hotel</p>
+        </div>
+
+        <div class="admin-sections">
+            <!-- Gestión de Habitaciones -->
+            <section class="admin-section">
+                <div class="section-header">
+                    <h2 class="section-title">Gestión de Habitaciones</h2>
+                    <button class="btn" onclick="showAddRoomForm()">Agregar Habitación</button>
+                </div>
+
+                <div id="addRoomForm" style="display: none;">
+                    <form id="roomForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="roomName">Nombre de la Habitación</label>
+                                <input type="text" id="roomName" name="roomName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="roomBeds">Número de Camas</label>
+                                <input type="number" id="roomBeds" name="roomBeds" min="1" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="roomMaxGuests">Huéspedes Máximos</label>
+                                <input type="number" id="roomMaxGuests" name="roomMaxGuests" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="roomPrice">Precio por Noche</label>
+                                <input type="number" id="roomPrice" name="roomPrice" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="roomDescription">Descripción</label>
+                            <textarea id="roomDescription" name="roomDescription" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="roomServices">Servicios (separados por comas)</label>
+                            <input type="text" id="roomServices" name="roomServices" placeholder="WiFi Gratuito, Minibar, TV Smart">
+                        </div>
+                        <div class="form-group">
+                            <label for="roomImage">URL de la Imagen</label>
+                            <input type="url" id="roomImage" name="roomImage" placeholder="https://ejemplo.com/imagen.jpg">
+                        </div>
+                        <div class="actions">
+                            <button type="submit" class="btn btn-success">Guardar Habitación</button>
+                            <button type="button" class="btn" onclick="hideAddRoomForm()">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Camas</th>
+                            <th>Huéspedes</th>
+                            <th>Precio/Noche</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="roomsTable">
+                        <!-- Las habitaciones se cargarán aquí -->
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Gestión de Reservas -->
+            <section class="admin-section">
+                <div class="section-header">
+                    <h2 class="section-title">Gestión de Reservas</h2>
+                </div>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Habitación</th>
+                            <th>Check-in</th>
+                            <th>Check-out</th>
+                            <th>Huéspedes</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reservationsTable">
+                        <!-- Las reservas se cargarán aquí -->
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Hotel el Rincón del Carmen</h3>
+                <p>Tu refugio perfecto en la ciudad</p>
+            </div>
+            <div class="footer-section">
+                <h4>Contacto</h4>
+                <p>📞 +57 301 333 7644</p>
+                <p>✉️ Carmen@rincondelcarmen.com</p>
+                <p>📍 Calle carmen #224</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Hotel el Rincón del Carmen. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/components/admin.js"></script>
+    
+    <script>
+        // Función para actualizar el header dinámicamente
+        function updateHeader() {
+            const currentUser = getCurrentUser();
+            const isAdmin = currentUser && currentUser.role === 'admin';
+            const isLoggedIn = currentUser !== null;
+            const header = document.getElementById('dynamic-header');
+            
+            if (header) {
+                header.innerHTML = `
+                    <nav>
+                        <div class="logo"> Hotel el Rincón del Carmen</div>
+                        <ul>
+                            <li><a href="../index.html">Inicio</a></li>
+                            <li><a href="disponibilidad.html">Disponibilidad</a></li>
+                            <li><a href="ubicacion.html">Ubicación</a></li>
+                            ${isLoggedIn ? `
+                                <li><span class="user-welcome">Hola, ${currentUser.fullName}</span></li>
+                                ${isAdmin ? `<li><a href="admin.html">Panel Admin</a></li>` : `<li><a href="mis-reservas.html">Mis Reservas</a></li>`}
+                                <li><a href="#" onclick="handleLogout()">Cerrar Sesión</a></li>
+                            ` : `
+                                <li><a href="login.html">Iniciar Sesión</a></li>
+                            `}
+                        </ul>
+                    </nav>
+                `;
+            }
+        }
+        
+        function handleLogout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                localStorage.setItem('currentUser', 'null');
+                showAlert('Has cerrado sesión correctamente.', 'info');
+                setTimeout(() => {
+                    window.location.href = '../index.html';
+                }, 1500);
+            }
+        }
+        
+        // Actualizar header cuando se carga la página
+        document.addEventListener('DOMContentLoaded', updateHeader);
+        
+        // Escuchar cambios en la sesión
+        window.addEventListener('storage', updateHeader);
+        window.addEventListener('userLoggedIn', updateHeader);
+        window.addEventListener('userLoggedOut', updateHeader);
+    </script>
+</body>
+</html>

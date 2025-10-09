@@ -1,0 +1,334 @@
+/* CSS específico para admin.html */
+
+.admin {
+    padding: 2rem 5%;
+    max-width: 1400px;
+    margin: 0 auto;
+    min-height: calc(100vh - 200px);
+}
+
+.admin-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.admin-header h1 {
+    font-size: 2.5rem;
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+}
+
+.admin-header p {
+    font-size: 1.1rem;
+    color: var(--color-text);
+    opacity: 0.8;
+}
+
+.admin-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.tab-btn {
+    background: var(--color-light);
+    color: var(--color-primary);
+    padding: 1rem 2rem;
+    border-radius: var(--radius);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    border: 2px solid var(--color-primary);
+}
+
+.tab-btn.active {
+    background: var(--color-primary);
+    color: var(--color-light);
+}
+
+.tab-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.admin-section {
+    background: var(--color-light);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 1.8rem;
+    color: var(--color-primary);
+    margin-bottom: 1.5rem;
+}
+
+.rooms-grid, .reservations-grid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.room-item, .reservation-item {
+    background: var(--color-bg);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    border: 1px solid #e0e0e0;
+}
+
+.room-item h3, .reservation-item h3 {
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+}
+
+.room-details, .reservation-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.detail-item {
+    font-size: 0.9rem;
+}
+
+.detail-item strong {
+    color: var(--color-primary);
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+/* Estilos específicos para botones de acción en tablas */
+.table .action-buttons {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 0;
+    justify-content: center;
+}
+
+.btn-action {
+    padding: 0.6rem 1.2rem !important;
+    font-size: 0.9rem !important;
+    margin: 0 !important;
+    min-width: 80px;
+    transition: all 0.3s ease;
+}
+
+.btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.btn-edit, .btn-cancel, .btn-delete {
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-edit {
+    background: var(--color-info);
+    color: var(--color-light);
+}
+
+.btn-cancel {
+    background: var(--color-error);
+    color: var(--color-light);
+}
+
+.btn-delete {
+    background: var(--color-error);
+    color: var(--color-light);
+}
+
+.btn-edit:hover, .btn-cancel:hover, .btn-delete:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+/* Estilos para tablas */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background: var(--color-light);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.table th {
+    background: var(--color-primary);
+    color: var(--color-light);
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.table td {
+    padding: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.table tr:hover {
+    background: #f8f9fa;
+}
+
+/* Estados de reservas */
+.status-confirmed {
+    background: #000000;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-cancelled {
+    background: #dc3545;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* Formulario de habitaciones */
+#addRoomForm {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: var(--radius);
+    margin: 1rem 0;
+    border: 1px solid #e0e0e0;
+}
+
+/* Estilos para el formulario de edición modal */
+#editRoomForm {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: var(--radius);
+    margin: 1rem 0;
+    border: 1px solid #e0e0e0;
+}
+
+#editRoomForm .form-group {
+    margin-bottom: 1.5rem;
+}
+
+#editRoomForm .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #000000;
+    font-size: 0.95rem;
+}
+
+#editRoomForm .form-group input,
+#editRoomForm .form-group textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid #e0e0e0;
+    border-radius: var(--radius);
+    font-size: 1rem;
+    transition: var(--transition);
+    font-family: inherit;
+}
+
+#editRoomForm .form-group input:focus,
+#editRoomForm .form-group textarea:focus {
+    border-color: #000000;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+#editRoomForm .form-group input::placeholder {
+    color: #aaa;
+    font-style: italic;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+/* Mejoras adicionales para botones de acción */
+.table td {
+    vertical-align: middle;
+}
+
+.table .action-buttons {
+    white-space: nowrap;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .admin-tabs {
+        flex-direction: column;
+    }
+    
+    .room-details, .reservation-details {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .btn-action {
+        width: 100%;
+        margin: 0.25rem 0;
+    }
+    
+    .btn-edit, .btn-cancel, .btn-delete {
+        width: 100%;
+    }
+    
+    .table {
+        font-size: 0.9rem;
+    }
+    
+    .table th, .table td {
+        padding: 0.5rem;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .actions {
+        flex-direction: column;
+    }
+}
+

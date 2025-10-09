@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ubicación - Hotel el Rincón del Carmen</title>
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏨</text></svg>">
+    <link rel="stylesheet" href="../css/common.css?v=2.0">
+    <link rel="stylesheet" href="../css/ubicacion.css?v=2.0">
+</head>
+<body>
+    <header id="dynamic-header">
+        <!-- El header se actualizará dinámicamente aquí -->
+    </header>
+
+    <main class="location-elegant">
+        <!-- Hero Section -->
+        <section class="location-hero">
+            <div class="hero-overlay">
+                <h1 class="elegant-title">Visítanos</h1>
+                <p class="elegant-subtitle">Te esperamos en el corazón de la ciudad</p>
+            </div>
+        </section>
+
+        <!-- Información de Contacto Elegante -->
+        <section class="elegant-contact-section">
+            <div class="contact-intro">
+                <h2 class="section-title">Estamos Aquí Para Ti</h2>
+                <p class="section-description">Nuestro equipo está disponible para atenderte en cualquier momento</p>
+            </div>
+
+            <div class="elegant-contact-grid">
+                <div class="elegant-contact-card">
+                    <div class="card-icon-wrapper">
+                        <div class="card-icon">📍</div>
+                    </div>
+                    <h3>Dirección</h3>
+                    <p class="card-detail">Calle carmen #224</p>
+                    <p class="card-detail-sub">Ciudad de Carmen</p>
+                </div>
+
+                <div class="elegant-contact-card">
+                    <div class="card-icon-wrapper">
+                        <div class="card-icon">📞</div>
+                    </div>
+                    <h3>Teléfono</h3>
+                    <p class="card-detail">+57 301 333 7644</p>
+                    <p class="card-detail-sub">Línea directa</p>
+                </div>
+
+                <div class="elegant-contact-card">
+                    <div class="card-icon-wrapper">
+                        <div class="card-icon">✉️</div>
+                    </div>
+                    <h3>Email</h3>
+                    <p class="card-detail">Carmen@rincondelcarmen.com</p>
+                    <p class="card-detail-sub">Respuesta en 24h</p>
+                </div>
+
+                <div class="elegant-contact-card">
+                    <div class="card-icon-wrapper">
+                        <div class="card-icon">🕐</div>
+                    </div>
+                    <h3>Horario</h3>
+                    <p class="card-detail">Atención 24/7</p>
+                    <p class="card-detail-sub">Todos los días del año</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mapa Elegante -->
+        <section class="elegant-map-section">
+            <div class="map-header">
+                <h2 class="section-title">Encuéntranos en el Mapa</h2>
+                <p class="section-description">Ubicación privilegiada en el centro de la ciudad</p>
+            </div>
+            <div class="map-container-elegant">
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3984.2!2d-75.5!3d6.25!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwMTUnMDAuMCJOIDc1wrAzMCcwMC4wIlc!5e0!3m2!1ses!2sco!4v1234567890" 
+                width="100%" 
+                    height="500" 
+                style="border:0;" 
+                allowfullscreen="" 
+                loading="lazy">
+            </iframe>
+            </div>
+        </section>
+
+        <section class="contact-form-section">
+            <div class="contact-form-header">
+                <div class="form-icon">✉️</div>
+                <h2>Envíanos un Mensaje</h2>
+                <p class="form-subtitle">¿Tienes alguna pregunta? Estamos aquí para ayudarte</p>
+                </div>
+            <form id="contactForm" class="modern-contact-form">
+                <div class="form-row-contact">
+                    <div class="form-group-contact">
+                        <label for="contact-name">Nombre Completo</label>
+                        <input type="text" id="contact-name" name="name" placeholder="Ej: Juan Pérez" required>
+                </div>
+                    <div class="form-group-contact">
+                        <label for="contact-email">Correo Electrónico</label>
+                        <input type="email" id="contact-email" name="email" placeholder="tu@email.com" required>
+                </div>
+            </div>
+                <div class="form-group-contact">
+                    <label for="contact-phone">Teléfono (Opcional)</label>
+                    <input type="tel" id="contact-phone" name="phone" placeholder="+57 300 123 4567">
+                </div>
+                <div class="form-group-contact">
+                    <label for="contact-message">Tu Mensaje</label>
+                    <textarea id="contact-message" name="message" placeholder="Escribe tu mensaje aquí..." rows="6" required></textarea>
+                </div>
+                <button type="submit" class="btn-send-message">
+                    <span>Enviar Mensaje</span>
+                    <span class="btn-icon">📤</span>
+                </button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Hotel el Rincón del Carmen</h3>
+                <p>Tu refugio perfecto en la ciudad</p>
+            </div>
+            <div class="footer-section">
+                <h4>Contacto</h4>
+                <p>📞 +57 301 333 7644</p>
+                <p>✉️ Carmen@rincondelcarmen.com</p>
+                <p>📍 Calle carmen #224</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Hotel el Rincón del Carmen. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    
+    <script>
+        // Función para actualizar el header dinámicamente
+        function updateHeader() {
+            const currentUser = getCurrentUser();
+            const isAdmin = currentUser && currentUser.role === 'admin';
+            const isLoggedIn = currentUser !== null;
+            const header = document.getElementById('dynamic-header');
+            
+            if (header) {
+                header.innerHTML = `
+                    <nav>
+                        <div class="logo"> Hotel el Rincón del Carmen</div>
+                        <ul>
+                            <li><a href="../index.html">Inicio</a></li>
+                            <li><a href="disponibilidad.html">Disponibilidad</a></li>
+                            <li><a href="ubicacion.html">Ubicación</a></li>
+                            ${isLoggedIn ? `
+                                <li><span class="user-welcome">Hola, ${currentUser.fullName}</span></li>
+                                ${isAdmin ? `<li><a href="admin.html">Panel Admin</a></li>` : `<li><a href="mis-reservas.html">Mis Reservas</a></li>`}
+                                <li><a href="#" onclick="handleLogout()">Cerrar Sesión</a></li>
+                            ` : `
+                                <li><a href="login.html">Iniciar Sesión</a></li>
+                            `}
+                        </ul>
+                    </nav>
+                `;
+            }
+        }
+        
+        function handleLogout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                localStorage.setItem('currentUser', 'null');
+                showAlert('Has cerrado sesión correctamente.', 'info');
+                setTimeout(() => {
+                    window.location.href = '../index.html';
+                }, 1500);
+            }
+        }
+        
+        // Actualizar header cuando se carga la página
+        document.addEventListener('DOMContentLoaded', updateHeader);
+        
+        // Escuchar cambios en la sesión
+        window.addEventListener('storage', updateHeader);
+        window.addEventListener('userLoggedIn', updateHeader);
+        window.addEventListener('userLoggedOut', updateHeader);
+    </script>
+</body>
+</html>
