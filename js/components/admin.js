@@ -61,8 +61,8 @@ function loadReservations() {
     reservations.forEach(res => {
         const room = rooms.find(r => r.id === res.roomId);
         const user = users.find(u => u.id === res.userId);
-        const statusClass = res.status === 'confirmed' ? 'status-confirmed' : 'status-cancelled';
-        const statusText = res.status === 'confirmed' ? 'Confirmada' : 'Cancelada';
+        const statusClass = res.status === 'confirmed' ? 'status-confirmed' : (res.status === 'checked-in' ? 'status-confirmed' : 'status-cancelled');
+        const statusText = res.status === 'confirmed' ? 'Confirmada' : (res.status === 'checked-in' ? 'En hospedaje' : 'Cancelada');
         
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -76,7 +76,13 @@ function loadReservations() {
             <td>
                 ${res.status === 'confirmed' ? `
                     <div class="action-buttons">
+                        <button onclick="checkInReservation('${res.id}')" class="btn btn-action" style="background:#28a745;color:#fff">Check-in</button>
                         <button onclick="modifyReservation('${res.id}')" class="btn btn-secondary btn-action">Modificar</button>
+                        <button onclick="deleteReservation('${res.id}')" class="btn btn-danger btn-action">Eliminar</button>
+                    </div>
+                ` : res.status === 'checked-in' ? `
+                    <div class="action-buttons">
+                        <button onclick="checkoutReservation('${res.id}')" class="btn btn-action" style="background:#6c757d;color:#fff">Check-out</button>
                         <button onclick="deleteReservation('${res.id}')" class="btn btn-danger btn-action">Eliminar</button>
                     </div>
                 ` : '<span style="color: #999;">Cancelada</span>'}
@@ -91,6 +97,10 @@ function formatDate(dateStr) {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return date.toLocaleDateString('es-ES', options);
 }
+
+// Exponer funciones en window para botones inline
+window.checkInReservation = checkInReservation;
+window.checkoutReservation = checkoutReservation;
 
 function showAddRoomForm() {
     const form = document.getElementById('addRoomForm');
@@ -439,6 +449,106 @@ function deleteReservation(id) {
     localStorage.setItem('reservations', JSON.stringify(filtered));
     
     showAlert('Reserva eliminada exitosamente.', 'success');
+    loadReservations();
+}
+
+// Realizar check-in: cambia estado y registra hora de ingreso
+function checkInReservation(id) {
+    const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+    const rooms = JSON.parse(localStorage.getItem('rooms')) || [];
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const reservation = reservations.find(r => r.id === id);
+    if (!reservation) return;
+    const room = rooms.find(r => r.id === reservation.roomId);
+    const user = users.find(u => u.id === reservation.userId);
+    showCheckInForm(reservation, room, user);
+}
+
+function showCheckInForm(reservation, room, user) {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+        position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 10000;
+        display: flex; align-items: center; justify-content: center; padding: 2rem;
+    `;
+    const formContainer = document.createElement('div');
+    formContainer.style.cssText = `
+        background: white; border-radius: 16px; padding: 2rem; width: 100%; max-width: 560px;
+        box-shadow: 0 20px 40px rgba(0,0,0,.3);
+    `;
+    formContainer.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+            <h2 style="margin:0;color:#000">Check-in de Huésped</h2>
+            <button id="ci-close" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:#666">&times;</button>
+        </div>
+        <div style="background:#f8f9fa;padding:1rem;border-radius:8px;margin-bottom:1rem;color:#666;font-size:.95rem;">
+            <div><strong>Cliente:</strong> ${user ? user.fullName : 'Usuario'}</div>
+            <div><strong>Habitación:</strong> ${room ? room.name : reservation.roomId}</div>
+            <div><strong>Reserva:</strong> ${reservation.id}</div>
+            <div><strong>Fechas:</strong> ${formatDate(reservation.checkIn)} — ${formatDate(reservation.checkOut)}</div>
+        </div>
+        <form id="checkInForm">
+            <div class="form-group">
+                <label>Número de Documento</label>
+                <input name="doc" type="text" required style="width:100%;padding:.8rem;border:1px solid #ddd;border-radius:8px" />
+            </div>
+            <div class="form-group" style="margin-top:1rem;">
+                <label>Hora de llegada</label>
+                <input name="arrivedAt" type="datetime-local" style="width:100%;padding:.8rem;border:1px solid #ddd;border-radius:8px" />
+            </div>
+            <div class="form-group" style="margin-top:1rem;">
+                <label>Notas</label>
+                <textarea name="notes" rows="3" style="width:100%;padding:.8rem;border:1px solid #ddd;border-radius:8px"></textarea>
+            </div>
+            <div class="actions" style="display:flex;gap:1rem;justify-content:flex-end;margin-top:1.25rem;">
+                <button type="button" id="ci-cancel" class="btn" style="background:#fff;color:#e07a5f;border:1px solid #e07a5f;border-radius:8px;padding:.7rem 1.2rem;font-weight:600;cursor:pointer">Cancelar</button>
+                <button type="submit" class="btn" style="background:#28a745;color:#fff;border-radius:8px;padding:.7rem 1.2rem;font-weight:600;cursor:pointer">Confirmar Check-in</button>
+            </div>
+        </form>
+    `;
+    overlay.appendChild(formContainer);
+    document.body.appendChild(overlay);
+    function close() { document.body.removeChild(overlay); }
+    formContainer.querySelector('#ci-close').addEventListener('click', close);
+    formContainer.querySelector('#ci-cancel').addEventListener('click', close);
+    const form = formContainer.querySelector('#checkInForm');
+    form.addEventListener('submit', (e) => handleCheckInFormSubmit(e, reservation.id, close));
+}
+
+function handleCheckInFormSubmit(e, reservationId, close) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const doc = formData.get('doc');
+    const arrivedAt = formData.get('arrivedAt');
+    const notes = formData.get('notes');
+    const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+    const idx = reservations.findIndex(r => r.id === reservationId);
+    if (idx === -1) return;
+    reservations[idx] = {
+        ...reservations[idx],
+        status: 'checked-in',
+        checkedInAt: arrivedAt ? new Date(arrivedAt).toISOString() : new Date().toISOString(),
+        guestDocument: doc,
+        notes: (reservations[idx].notes || '') + (notes ? ` | ${notes}` : '')
+    };
+    localStorage.setItem('reservations', JSON.stringify(reservations));
+    if (typeof close === 'function') close();
+    showAlert('Check-in realizado exitosamente.', 'success');
+    loadReservations();
+}
+
+// Realizar check-out: cancela ocupación para liberar fecha (simple)
+function checkoutReservation(id) {
+    const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+    const idx = reservations.findIndex(r => r.id === id);
+    if (idx === -1) return;
+    reservations[idx] = {
+        ...reservations[idx],
+        status: 'cancelled',
+        cancelledReason: 'checkout',
+        checkedOutAt: new Date().toISOString()
+    };
+    localStorage.setItem('reservations', JSON.stringify(reservations));
+    showAlert('Check-out registrado. Habitación liberada.', 'success');
     loadReservations();
 }
 

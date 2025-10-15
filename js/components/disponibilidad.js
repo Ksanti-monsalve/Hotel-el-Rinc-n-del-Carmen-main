@@ -141,7 +141,9 @@ function getAvailableRooms(checkIn, checkOut, guests) {
         
         // Verificar si hay solapamiento con reservas confirmadas
         const isBooked = reservations.some(res => {
-            if (res.roomId !== room.id || res.status !== 'confirmed') return false;
+            // Considerar ocupadas las reservas con estado activo (confirmadas o con check-in)
+            const activeStatuses = ['confirmed', 'checked-in'];
+            if (res.roomId !== room.id || !activeStatuses.includes(res.status)) return false;
             // Hay solapamiento si las fechas se cruzan
             return !(checkOut <= res.checkIn || checkIn >= res.checkOut);
         });
@@ -268,7 +270,8 @@ function handleReservation(roomId, checkIn, checkOut, guests, totalPrice, room) 
     // Verificar disponibilidad una vez más antes de confirmar
     const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
     const hasConflict = reservations.some(res => {
-        if (res.roomId !== roomId || res.status !== 'confirmed') return false;
+        const activeStatuses = ['confirmed', 'checked-in'];
+        if (res.roomId !== roomId || !activeStatuses.includes(res.status)) return false;
         const resCheckIn = new Date(res.checkIn);
         const resCheckOut = new Date(res.checkOut);
         const newCheckIn = new Date(checkIn);
@@ -283,26 +286,33 @@ function handleReservation(roomId, checkIn, checkOut, guests, totalPrice, room) 
         return;
     }
 
-    // Crear la reserva (user ya está validado arriba)
-    const reservation = {
-        id: Date.now().toString(),
-        userId: user.id,
-        userName: user.fullName,
-        roomId: roomId,
-        roomName: room.name || 'Habitación sin nombre',
-        checkIn: checkIn,
-        checkOut: checkOut,
-        guests: guests,
-        totalPrice: totalPrice,
-        status: 'confirmed',
-        createdAt: new Date().toISOString()
-    };
+    // Mostrar modal de políticas y condiciones antes de confirmar
+    showPoliciesAndConfirm(() => {
+        // Crear la reserva tras aceptar políticas
+        const mustCheckInBy = computeCheckInDeadline(checkIn);
+        const reservation = {
+            id: Date.now().toString(),
+            userId: user.id,
+            userName: user.fullName,
+            roomId: roomId,
+            roomName: room.name || 'Habitación sin nombre',
+            checkIn: checkIn,
+            checkOut: checkOut,
+            guests: guests,
+            totalPrice: totalPrice,
+            status: 'confirmed',
+            policiesAccepted: true,
+            policiesAcceptedAt: new Date().toISOString(),
+            mustCheckInBy: mustCheckInBy.toISOString(),
+            createdAt: new Date().toISOString()
+        };
 
-    reservations.push(reservation);
-    localStorage.setItem('reservations', JSON.stringify(reservations));
-    
-    showAlert(`¡Reserva confirmada exitosamente! Total: $${totalPrice.toLocaleString()}`, 'success');
-    setTimeout(() => window.location.href = 'mis-reservas.html', 2000);
+        reservations.push(reservation);
+        localStorage.setItem('reservations', JSON.stringify(reservations));
+
+        showAlert(`¡Reserva confirmada exitosamente! Total: $${totalPrice.toLocaleString()}`, 'success');
+        setTimeout(() => window.location.href = 'mis-reservas.html', 2000);
+    });
 }
 
 function formatDate(dateStr) {
@@ -333,4 +343,60 @@ function showAlert(message, type = 'info') {
         alert.style.animation = 'slideOut 0.3s ease';
         setTimeout(() => alert.remove(), 300);
     }, 3000);
+}
+
+// Modal de políticas: el usuario debe aceptarlas antes de confirmar una reserva
+function showPoliciesAndConfirm(onAccept) {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+        position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 10000;
+        display: flex; align-items: center; justify-content: center; padding: 1.5rem;
+    `;
+
+    const container = document.createElement('div');
+    container.style.cssText = `
+        background: #fff; border-radius: 16px; max-width: 720px; width: 100%;
+        box-shadow: 0 20px 40px rgba(0,0,0,.25); overflow: hidden;
+    `;
+
+    container.innerHTML = `
+        <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid #eee; display:flex; justify-content: space-between; align-items:center;">
+            <h3 style="margin:0;color:#000;">Condiciones y Políticas del Hotel</h3>
+            <button id="pol-close" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:#666">&times;</button>
+        </div>
+        <div style="padding: 1.5rem; color:#333; line-height:1.6;">
+            <p>Para continuar con la reserva debes aceptar nuestras políticas:</p>
+            <ul style="padding-left: 1.2rem;">
+                <li><strong>Hora de check-in:</strong> 14:00 del día de llegada.</li>
+                <li><strong>No-show:</strong> Si el huésped no realiza el check-in <strong>a más tardar a las 16:00</strong> del mismo día, la habitación podrá ser liberada para otros clientes y la reserva quedará cancelada automáticamente.</li>
+                <li>Debes presentar un documento de identidad válido en el check-in.</li>
+                <li>Se aplican normas de convivencia del hotel durante toda la estadía.</li>
+            </ul>
+            <p>Consulta el detalle completo en <a href="politicas.html" style="color:#e07a5f; font-weight:600;">Políticas del Hotel</a>.</p>
+            <label style="display:flex; gap:.6rem; align-items:flex-start; margin-top: .5rem;">
+                <input id="acceptPoliciesChk" type="checkbox" style="margin-top:.25rem"> 
+                <span>He leído y acepto las políticas del hotel y las condiciones de la reserva.</span>
+            </label>
+        </div>
+        <div style="padding: 1rem 1.5rem; border-top: 1px solid #eee; display:flex; gap:.75rem; justify-content: flex-end;">
+            <button id="pol-cancel" class="btn" style="background:#fff; color:#e07a5f; border:1px solid #e07a5f; padding:.7rem 1.2rem; border-radius:8px; font-weight:600; cursor:pointer;">Cancelar</button>
+            <button id="pol-accept" class="btn" style="background:#000; color:#fff; padding:.7rem 1.2rem; border-radius:8px; font-weight:600; cursor:pointer;">Acepto y continuar</button>
+        </div>
+    `;
+
+    overlay.appendChild(container);
+    document.body.appendChild(overlay);
+
+    function close() { document.body.removeChild(overlay); }
+    container.querySelector('#pol-close').addEventListener('click', close);
+    container.querySelector('#pol-cancel').addEventListener('click', close);
+    container.querySelector('#pol-accept').addEventListener('click', () => {
+        const accepted = container.querySelector('#acceptPoliciesChk').checked;
+        if (!accepted) {
+            showAlert('Debes aceptar las políticas para continuar.', 'error');
+            return;
+        }
+        close();
+        if (typeof onAccept === 'function') onAccept();
+    });
 }

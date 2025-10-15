@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Políticas del Hotel - Hotel el Rincón del Carmen</title>
+  <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏨</text></svg>">
+  <link rel="stylesheet" href="../css/common.css?v=2.0" />
+  <style>
+    main{max-width:960px;margin:0 auto;padding:2rem 5%;min-height:calc(100vh - 200px)}
+    h1{font-size:2.2rem;margin-bottom:1rem;color:#000}
+    .card{background:#fff;border-radius:16px;box-shadow:0 10px 25px rgba(0,0,0,.08);padding:1.5rem;margin:1rem 0}
+    .tag{display:inline-block;background:#000;color:#fff;border-radius:999px;padding:.2rem .75rem;font-size:.8rem;font-weight:700;margin-right:.4rem}
+    ul{padding-left:1.2rem}
+  </style>
+</head>
+<body>
+  <header id="dynamic-header"></header>
+  <main>
+    <h1>Políticas y Condiciones del Hotel</h1>
+    <div class="card">
+      <span class="tag">Check-in</span>
+      <p>La hora de check-in es a las <strong>14:00</strong> del día de llegada. El huésped debe presentarse en recepción con documento de identidad válido.</p>
+    </div>
+    <div class="card">
+      <span class="tag">No‑show</span>
+      <p>Si el huésped no realiza el check-in <strong>antes de las 16:00</strong> del mismo día de llegada, la reserva podrá cancelarse automáticamente y la habitación quedará disponible para otros clientes.</p>
+    </div>
+    <div class="card">
+      <span class="tag">Convivencia</span>
+      <ul>
+        <li>Está prohibido fumar en las habitaciones.</li>
+        <li>No se permiten fiestas ni ruidos molestos después de las 22:00.</li>
+        <li>Las visitas deben registrarse en recepción.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="tag">Pagos</span>
+      <p>Los precios incluyen impuestos aplicables. Servicios adicionales se cobrarán al momento del check‑out.</p>
+    </div>
+  </main>
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>Hotel el Rincón del Carmen</h3>
+        <p>Tu refugio perfecto en la ciudad</p>
+      </div>
+      <div class="footer-section">
+        <h4>Contacto</h4>
+        <p>📞 +57 301 333 7644</p>
+        <p>✉️ Carmen@rincondelcarmen.com</p>
+        <p>📍 Calle carmen #224</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024 Hotel el Rincón del Carmen. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+  <script src="../js/script.js"></script>
+  <script>
+    function updateHeader(){
+      const currentUser=getCurrentUser();
+      const isAdmin=currentUser && currentUser.role==='admin';
+      const isLoggedIn=currentUser!==null;
+      const header=document.getElementById('dynamic-header');
+      if(header){
+        header.innerHTML=`
+          <nav>
+            <div class="logo"> Hotel el Rincón del Carmen</div>
+            <ul>
+              <li><a href="../index.html">Inicio</a></li>
+              <li><a href="disponibilidad.html">Disponibilidad</a></li>
+              <li><a href="ubicacion.html">Ubicación</a></li>
+              ${isLoggedIn ? `
+                <li><span class="user-welcome">Hola, ${currentUser.fullName}</span></li>
+                ${isAdmin ? `<li><a href="admin.html">Panel Admin</a></li>` : `<li><a href="mis-reservas.html">Mis Reservas</a></li>`}
+                <li><a href="#" onclick="(logout(),showAlert('Has cerrado sesión correctamente.','info'),setTimeout(()=>{window.location.href='../index.html'},1500))">Cerrar Sesión</a></li>
+              ` : `
+                <li><a href="login.html">Iniciar Sesión</a></li>
+              `}
+            </ul>
+          </nav>
+        `;
+      }
+    }
+    document.addEventListener('DOMContentLoaded', updateHeader);
+    window.addEventListener('storage', updateHeader);
+  </script>
+</body>
+</html>

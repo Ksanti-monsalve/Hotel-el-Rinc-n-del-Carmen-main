@@ -188,13 +188,59 @@ function createReservation(reservationData) {
     return { success: true, message: 'Reserva creada exitosamente', reservation: newReservation };
 }
 
+// Utilidad: calcular la hora límite para presentarse al check-in (16:00 del día de entrada)
+function computeCheckInDeadline(checkInDateStr) {
+    try {
+        const date = new Date(checkInDateStr);
+        // Normalizar al inicio del día local y luego fijar 16:00
+        const deadline = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 16, 0, 0, 0);
+        return deadline;
+    } catch (_) {
+        // Fallback: ahora + 2h
+        const now = new Date();
+        now.setHours(now.getHours() + 2);
+        return now;
+    }
+}
+
+// Servicio: expirar reservas que no hicieron check-in para liberar habitación
+function expireNoShowReservations() {
+    const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+    let changed = false;
+    const now = new Date();
+    const updated = reservations.map(res => {
+        if (res.status === 'confirmed') {
+            // Usar el campo almacenado o calcular
+            const deadline = res.mustCheckInBy ? new Date(res.mustCheckInBy) : computeCheckInDeadline(res.checkIn);
+            // Si la fecha de check-in es hoy (o anterior) y ya pasó la hora límite
+            if (now > deadline) {
+                changed = true;
+                return {
+                    ...res,
+                    status: 'cancelled',
+                    cancelledReason: 'no-show',
+                    expiredAt: now.toISOString(),
+                    notes: (res.notes || '') + ' | Reserva expirada por no presentarse antes de las 16:00.'
+                };
+            }
+        }
+        return res;
+    });
+    if (changed) {
+        localStorage.setItem('reservations', JSON.stringify(updated));
+        try { console.log('Reservas expiradas por no show procesadas'); } catch (_) {}
+    }
+}
+
 function isRoomAvailable(roomId, checkIn, checkOut) {
     const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
     const checkInDate = new Date(checkIn);
     const checkOutDate = new Date(checkOut);
     
     return !reservations.some(reservation => {
-        if (reservation.roomId !== roomId || reservation.status !== 'confirmed') {
+        // Considerar ocupadas reservas confirmadas o ya en hospedaje
+        const activeStatuses = ['confirmed', 'checked-in'];
+        if (reservation.roomId !== roomId || !activeStatuses.includes(reservation.status)) {
             return false;
         }
         
@@ -404,6 +450,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Actualizar información de habitaciones
     updateRoomsInfo();
+
+    // Expirar no-shows y programar revisión periódica (cada 60s)
+    try {
+        expireNoShowReservations();
+        setInterval(expireNoShowReservations, 60 * 1000);
+    } catch (_) {}
 });
 
 // Asegurar que existe un usuario de prueba
