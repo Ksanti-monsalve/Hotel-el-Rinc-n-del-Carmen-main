@@ -52,6 +52,8 @@ function loadMyReservations() {
         }
         
         const nights = Math.ceil((new Date(res.checkOut) - new Date(res.checkIn)) / (1000 * 60 * 60 * 24));
+        const statusLabel = res.status === 'checked_in' ? 'Check-in' : res.status === 'no_show' ? 'No-show' : (res.status === 'confirmed' ? 'Confirmada' : 'Cancelada');
+        const statusClass = res.status === 'checked_in' ? 'status-confirmed' : (res.status === 'no_show' ? 'status-cancelled' : (res.status === 'confirmed' ? 'status-confirmed' : 'status-cancelled'));
         
         const card = document.createElement('div');
         card.className = 'reservation-card';
@@ -61,7 +63,7 @@ function loadMyReservations() {
                     <h3 class="reservation-title">${room.name}</h3>
                     <p class="reservation-id">ID: ${res.id}</p>
                 </div>
-                <span class="reservation-status status-${res.status}">${res.status === 'confirmed' ? 'Confirmada' : 'Cancelada'}</span>
+                <span class="reservation-status ${statusClass}">${statusLabel}</span>
             </div>
             
             <div class="reservation-details">
@@ -92,7 +94,7 @@ function loadMyReservations() {
                     <button class="btn-cancel-reservation" onclick="cancelMyReservation('${res.id}')">
                         Cancelar Reserva
                     </button>
-                ` : '<p style="text-align: center; color: #999; font-size: 0.9rem; margin-top: 1rem;">Esta reserva ha sido cancelada</p>'}
+                ` : '<p style="text-align: center; color: #999; font-size: 0.9rem; margin-top: 1rem;">Reserva no disponible para cambios</p>'}
             </div>
         `;
         container.appendChild(card);

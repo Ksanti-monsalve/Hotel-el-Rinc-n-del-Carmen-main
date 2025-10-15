@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Políticas del Hotel - Hotel el Rincón del Carmen</title>
+  <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏨</text></svg>">
+  <link rel="stylesheet" href="../css/common.css?v=2.0">
+  <style>
+    body { background: #0f1115; color: #eaeaea; }
+    .container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem 5rem; }
+    h1 { font-size: 2.2rem; margin-bottom: .5rem; }
+    .sub { color: #a0a0a0; margin-bottom: 2rem; }
+    .card { background: #141820; border: 1px solid #222636; border-radius: 16px; padding: 1.5rem; margin-bottom: 1rem; }
+    .card h3 { margin: 0 0 .5rem; color: #fff; }
+    .muted { color: #a0a0a0; font-size: .95rem; }
+    .notice { background: #161b26; border-left: 4px solid #d4a574; padding: 1rem; border-radius: 12px; margin: 1rem 0; color: #d7d7d7; }
+    .actions { display: flex; gap: 1rem; align-items: center; margin-top: 1.5rem; }
+    .btn { background: #000; color: #fff; border: none; border-radius: 10px; padding: .9rem 1.4rem; font-weight: 700; cursor: pointer; }
+    .btn.secondary { background: transparent; color: #d4a574; border: 1px solid #2a2f3c; }
+    a { color: #d4a574; }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>Condiciones y Políticas del Hotel</h1>
+    <p class="sub">Por favor, lee atentamente. Deberás aceptarlas para completar tu reserva.</p>
+
+    <div class="card">
+      <h3>Horario de Check-in y No-show</h3>
+      <p class="muted">El <strong>check-in inicia a las 14:00</strong>. Si el huésped no realiza el check-in a más tardar <strong>dos horas después</strong> (16:00), la reserva quedará disponible para que otra persona la pueda tomar. Esta condición se informa y acepta al reservar.</p>
+    </div>
+
+    <div class="card">
+      <h3>Documentos requeridos</h3>
+      <p class="muted">El titular debe presentar documento de identidad válido al momento del check-in. Los menores de edad deben estar acompañados por un adulto responsable.</p>
+    </div>
+
+    <div class="card">
+      <h3>Pagos y garantías</h3>
+      <p class="muted">Al confirmar la reserva, el huésped autoriza los cargos correspondientes según la tarifa seleccionada. Las tarifas pueden variar según temporada y disponibilidad.</p>
+    </div>
+
+    <div class="card">
+      <h3>Cancelaciones</h3>
+      <p class="muted">Las cancelaciones están sujetas a la política de la tarifa adquirida. Si no existe política específica, las cancelaciones deben realizarse con al menos 24 horas de anticipación.</p>
+    </div>
+
+    <div class="notice">Al hacer clic en “Acepto políticas” guardarás tu aceptación en este navegador. Podrás reservar sin volver a aceptar, salvo que eliminemos o actualicemos las políticas.</div>
+
+    <div class="actions">
+      <button id="accept" class="btn">Acepto políticas</button>
+      <button id="reject" class="btn secondary">No aceptar</button>
+    </div>
+  </main>
+
+  <script>
+    function getCurrentUser() {
+      try { const u = localStorage.getItem('currentUser'); return u && u !== 'null' ? JSON.parse(u) : null; } catch { return null; }
+    }
+    const user = getCurrentUser();
+    const acceptBtn = document.getElementById('accept');
+    const rejectBtn = document.getElementById('reject');
+
+    function goBack() {
+      if (history.length > 1) history.back(); else window.location.href = 'disponibilidad.html';
+    }
+
+    acceptBtn.addEventListener('click', () => {
+      if (!user) { alert('Debes iniciar sesión para asociar tu aceptación.'); window.location.href = 'login.html'; return; }
+      localStorage.setItem(`policiesAccepted:${user.id}`, 'true');
+      alert('Aceptación guardada. Ahora puedes continuar con tu reserva.');
+      goBack();
+    });
+
+    rejectBtn.addEventListener('click', () => {
+      if (user) localStorage.setItem(`policiesAccepted:${user.id}`, 'false');
+      goBack();
+    });
+  </script>
+</body>
+</html>

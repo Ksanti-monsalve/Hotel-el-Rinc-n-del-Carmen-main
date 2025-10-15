@@ -179,6 +179,7 @@ function createReservation(reservationData) {
         id: 'reservation-' + Date.now(),
         ...reservationData,
         status: 'confirmed',
+        policiesAccepted: true,
         createdAt: new Date().toISOString()
     };
     
@@ -404,6 +405,25 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Actualizar información de habitaciones
     updateRoomsInfo();
+
+    // Aplicar política de no-show: liberar reservas no reclamadas después de 16:00 del día de check-in
+    try {
+        const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+        const now = new Date();
+        let changed = false;
+        reservations.forEach(r => {
+            if (r.status === 'confirmed') {
+                const ci = new Date(r.checkIn);
+                const cutoff = new Date(ci.getFullYear(), ci.getMonth(), ci.getDate(), 16, 0, 0, 0);
+                if (now.getTime() > cutoff.getTime()) {
+                    r.status = 'no_show';
+                    r.noShowAt = now.toISOString();
+                    changed = true;
+                }
+            }
+        });
+        if (changed) localStorage.setItem('reservations', JSON.stringify(reservations));
+    } catch {}
 });
 
 // Asegurar que existe un usuario de prueba

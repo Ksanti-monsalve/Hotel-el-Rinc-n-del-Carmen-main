@@ -61,8 +61,10 @@ function loadReservations() {
     reservations.forEach(res => {
         const room = rooms.find(r => r.id === res.roomId);
         const user = users.find(u => u.id === res.userId);
-        const statusClass = res.status === 'confirmed' ? 'status-confirmed' : 'status-cancelled';
-        const statusText = res.status === 'confirmed' ? 'Confirmada' : 'Cancelada';
+        const statusClassMap = { confirmed: 'status-confirmed', cancelled: 'status-cancelled', checked_in: 'status-checked_in', no_show: 'status-no-show' };
+        const statusTextMap = { confirmed: 'Confirmada', cancelled: 'Cancelada', checked_in: 'Check-in', no_show: 'No-show' };
+        const statusClass = statusClassMap[res.status] || 'status-confirmed';
+        const statusText = statusTextMap[res.status] || res.status;
         
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -73,14 +75,7 @@ function loadReservations() {
             <td>${res.guests}</td>
             <td>$${res.totalPrice.toLocaleString()}</td>
             <td><span class="${statusClass}">${statusText}</span></td>
-            <td>
-                ${res.status === 'confirmed' ? `
-                    <div class="action-buttons">
-                        <button onclick="modifyReservation('${res.id}')" class="btn btn-secondary btn-action">Modificar</button>
-                        <button onclick="deleteReservation('${res.id}')" class="btn btn-danger btn-action">Eliminar</button>
-                    </div>
-                ` : '<span style="color: #999;">Cancelada</span>'}
-            </td>
+            <td>${renderReservationActions(res)}</td>
         `;
         tableBody.appendChild(row);
     });
@@ -464,4 +459,116 @@ function showAlert(message, type = 'info') {
         alert.style.animation = 'slideOut 0.3s ease';
         setTimeout(() => alert.remove(), 300);
     }, 3000);
+}
+
+// === Check-in management ===
+function renderReservationActions(res) {
+    if (res.status === 'cancelled' || res.status === 'no_show') {
+        return '<span style="color: #999;">Sin acciones</span>';
+    }
+    if (res.status === 'checked_in') {
+        return `
+            <div class="action-buttons">
+                <button onclick="modifyReservation('${res.id}')" class="btn btn-secondary btn-action">Modificar</button>
+                <button onclick="deleteReservation('${res.id}')" class="btn btn-danger btn-action">Eliminar</button>
+            </div>
+        `;
+    }
+    // confirmed
+    const eligible = canCheckIn(res);
+    return `
+        <div class="action-buttons">
+            <button onclick="modifyReservation('${res.id}')" class="btn btn-secondary btn-action">Modificar</button>
+            <button onclick="showCheckInForm('${res.id}')" class="btn btn-action" style="background:#000000; color:white;">${eligible ? 'Hacer Check-in' : 'Check-in (desde 14:00)'}</button>
+            <button onclick="deleteReservation('${res.id}')" class="btn btn-danger btn-action">Eliminar</button>
+        </div>
+    `;
+}
+
+function canCheckIn(res) {
+    try {
+        const checkInDate = new Date(res.checkIn);
+        const eligibleTime = new Date(checkInDate.getFullYear(), checkInDate.getMonth(), checkInDate.getDate(), 14, 0, 0, 0);
+        return Date.now() >= eligibleTime.getTime();
+    } catch {
+        return true;
+    }
+}
+
+function showCheckInForm(reservationId) {
+    const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+    const rooms = JSON.parse(localStorage.getItem('rooms')) || [];
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const reservation = reservations.find(r => r.id === reservationId);
+    if (!reservation) return;
+    const room = rooms.find(r => r.id === reservation.roomId);
+    const user = users.find(u => u.id === reservation.userId);
+
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:10000; display:flex; align-items:center; justify-content:center; padding:2rem;`;
+
+    const box = document.createElement('div');
+    box.style.cssText = `background:white; border-radius:16px; padding:2rem; width:100%; max-width:520px; box-shadow:0 20px 40px rgba(0,0,0,.3);`;
+    box.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h2 style="margin:0; color:#000; font-size:1.4rem;">Check-in de Huésped</h2>
+        <button onclick="closeCheckInForm()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:#666">&times;</button>
+      </div>
+      <div style="background:#f8f9fa; border-radius:12px; padding:1rem; margin-bottom:1rem; color:#555;">
+        <div><strong>Huésped:</strong> ${user ? user.fullName : 'Usuario'}</div>
+        <div><strong>Habitación:</strong> ${room ? room.name : reservation.roomId}</div>
+        <div><strong>Estadía:</strong> ${formatDate(reservation.checkIn)} → ${formatDate(reservation.checkOut)}</div>
+      </div>
+      <form id="checkInForm">
+        <div class="form-row">
+          <div class="form-group" style="width:100%">
+            <label for="docNumber">Documento presentado</label>
+            <input type="text" id="docNumber" name="docNumber" placeholder="Número de documento" required style="width:100%; padding:.8rem; border:1px solid #ddd; border-radius:8px;">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="notes">Notas</label>
+          <textarea id="notes" name="notes" rows="3" placeholder="Observaciones del ingreso" style="width:100%; padding:.8rem; border:1px solid #ddd; border-radius:8px;"></textarea>
+        </div>
+        <div class="actions" style="display:flex; gap:1rem; justify-content:center; margin-top:1rem;">
+          <button type="submit" class="btn" style="background:#000; color:#fff; padding:.8rem 1.6rem; border-radius:8px;">Confirmar Check-in</button>
+          <button type="button" class="btn" onclick="closeCheckInForm()" style="background:white; color:#d4a574; border:1px solid #d4a574; padding:.8rem 1.6rem; border-radius:8px;">Cancelar</button>
+        </div>
+      </form>
+    `;
+
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    const form = document.getElementById('checkInForm');
+    form.addEventListener('submit', (e) => handleCheckInFormSubmit(e, reservationId));
+
+    window.closeCheckInForm = function() {
+        document.body.removeChild(overlay);
+        delete window.closeCheckInForm;
+    };
+}
+
+function handleCheckInFormSubmit(e, reservationId) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const docNumber = (formData.get('docNumber') || '').toString().trim();
+    const notes = (formData.get('notes') || '').toString().trim();
+    if (!docNumber) return;
+
+    const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+    const idx = reservations.findIndex(r => r.id === reservationId);
+    if (idx === -1) return;
+
+    reservations[idx] = {
+        ...reservations[idx],
+        status: 'checked_in',
+        checkedInAt: new Date().toISOString(),
+        checkInDocument: docNumber,
+        checkInNotes: notes
+    };
+    localStorage.setItem('reservations', JSON.stringify(reservations));
+    showAlert('Check-in registrado correctamente.', 'success');
+    loadReservations();
+    if (typeof window.closeCheckInForm === 'function') window.closeCheckInForm();
 }

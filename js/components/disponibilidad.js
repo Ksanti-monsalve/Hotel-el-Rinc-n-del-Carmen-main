@@ -141,7 +141,8 @@ function getAvailableRooms(checkIn, checkOut, guests) {
         
         // Verificar si hay solapamiento con reservas confirmadas
         const isBooked = reservations.some(res => {
-            if (res.roomId !== room.id || res.status !== 'confirmed') return false;
+            // Las reservas que bloquean disponibilidad son 'confirmed' o 'checked_in'
+            if (res.roomId !== room.id || !['confirmed', 'checked_in'].includes(res.status)) return false;
             // Hay solapamiento si las fechas se cruzan
             return !(checkOut <= res.checkIn || checkIn >= res.checkOut);
         });
@@ -208,9 +209,15 @@ function createRoomCard(room, checkIn, checkOut, guests) {
                         <p style="color: #999; font-size: 0.85rem; margin-top: 0.5rem;">Los administradores no pueden hacer reservas</p>
                     </div>
                 ` : `
-                    <button class="btn-reserve" data-room-id="${room.id || ''}" data-check-in="${checkIn}" data-check-out="${checkOut}" data-guests="${guests}" data-total="${totalPrice}">
-                        Reservar Ahora
-                    </button>
+                    <div style="display:flex; flex-direction:column; gap:0.5rem; align-items:flex-end;">
+                        <label style="font-size: 0.85rem; color:#444; display:flex; align-items:center; gap:0.5rem;">
+                            <input type="checkbox" class="accept-policies" />
+                            He leído y acepto las <a href="politicas.html" target="_blank" style="color:#000000; font-weight:700;">políticas del hotel</a>
+                        </label>
+                        <button class="btn-reserve" data-room-id="${room.id || ''}" data-check-in="${checkIn}" data-check-out="${checkOut}" data-guests="${guests}" data-total="${totalPrice}" disabled>
+                            Reservar Ahora
+                        </button>
+                    </div>
                 `}
             </div>
         </div>
@@ -219,6 +226,26 @@ function createRoomCard(room, checkIn, checkOut, guests) {
     // Agregar evento al botón de reserva solo si no es admin
     if (!isAdmin) {
         const btnReserve = card.querySelector('.btn-reserve');
+        const acceptPolicies = card.querySelector('.accept-policies');
+        const currentUser = localStorage.getItem('currentUser');
+        let currentUserId = null;
+        try { currentUserId = currentUser ? JSON.parse(currentUser).id : null; } catch {}
+
+        if (acceptPolicies && btnReserve) {
+            // Inicializar estado del botón según aceptación previa
+            if (currentUserId && localStorage.getItem(`policiesAccepted:${currentUserId}`) === 'true') {
+                acceptPolicies.checked = true;
+                btnReserve.disabled = false;
+            }
+
+            acceptPolicies.addEventListener('change', () => {
+                btnReserve.disabled = !acceptPolicies.checked;
+                if (currentUserId) {
+                    localStorage.setItem(`policiesAccepted:${currentUserId}`, acceptPolicies.checked ? 'true' : 'false');
+                }
+            });
+        }
+
         if (btnReserve) {
             btnReserve.addEventListener('click', function() {
                 handleReservation(
@@ -265,6 +292,13 @@ function handleReservation(roomId, checkIn, checkOut, guests, totalPrice, room) 
         return;
     }
 
+    // Verificar aceptación de políticas
+    const accepted = localStorage.getItem(`policiesAccepted:${user.id}`) === 'true';
+    if (!accepted) {
+        showAlert('Debes aceptar las políticas del hotel antes de reservar. Ábrelas desde el enlace y marca la casilla.', 'error');
+        return;
+    }
+
     // Verificar disponibilidad una vez más antes de confirmar
     const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
     const hasConflict = reservations.some(res => {
@@ -295,6 +329,7 @@ function handleReservation(roomId, checkIn, checkOut, guests, totalPrice, room) 
         guests: guests,
         totalPrice: totalPrice,
         status: 'confirmed',
+        policiesAccepted: true,
         createdAt: new Date().toISOString()
     };
 

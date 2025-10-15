@@ -215,6 +215,27 @@
     text-transform: uppercase;
 }
 
+/* Nuevos estados */
+.status-checked_in {
+    background: #198754;
+    color: #fff;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-no-show {
+    background: #6c757d;
+    color: #fff;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
 /* Formulario de habitaciones */
 #addRoomForm {
     background: #f8f9fa;
