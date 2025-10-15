@@ -20,6 +20,8 @@ El sistema está diseñado para ser **sencillo, agradable y funcional**, prioriz
 - **👨‍💼 Panel de Administración**: Gestión completa de habitaciones, precios y servicios
 - **📊 Gestión de Reservas**: Visualización, modificación y cancelación de reservas de clientes
 - **🏨 Administración de Habitaciones**: Control de disponibilidad, precios por noche y servicios incluidos
+- **🔑 Gestión de Check-in**: Check-in manual por administrador con validaciones y seguimiento en tiempo real
+- **⏰ Control de Tiempo**: Monitoreo de check-ins con límite de 2 horas para confirmación de estadía
 - **📈 Reportes**: Seguimiento de reservas y ocupación del hotel
 
 ### 🔒 **Seguridad y Validación**
@@ -87,9 +89,10 @@ Hotel-el-Rinc-n-del-Carmen-main/
 │   ├── admin.css                    # Estilos del panel de administración
 │   └── mis-reservas.css             # Estilos de la página de reservas del usuario
 │
-├── 📁 html/                         # Páginas HTML (6 archivos)
+├── 📁 html/                         # Páginas HTML (7 archivos)
 │   ├── admin.html                   # Panel de administración
 │   ├── disponibilidad.html          # Consulta y reserva de habitaciones
+│   ├── checkin.html                 # Sistema de check-in de huéspedes
 │   ├── ubicacion.html               # Información de ubicación y contacto
 │   ├── login.html                   # Formulario de inicio de sesión
 │   ├── register.html                # Formulario de registro de usuario
@@ -164,6 +167,9 @@ Hotel-el-Rinc-n-del-Carmen-main/
 - **Dashboard** con estadísticas generales
 - **Gestión de habitaciones**: agregar, editar, eliminar
 - **Gestión de reservas**: ver, modificar, cancelar reservas de clientes
+- **Sistema de check-in administrativo**: check-in manual con validaciones
+- **Monitoreo de check-ins**: seguimiento en tiempo real de check-ins del día
+- **Control de tiempo**: gestión de límites de 2 horas para confirmación
 - **Control de precios** y servicios por habitación
 - **Acceso restringido** solo a administradores
 
@@ -199,5 +205,39 @@ Hotel-el-Rinc-n-del-Carmen-main/
 
 
 ## 👨‍💻 Autor
+
+## 🏨 Sistema de Check-in
+
+### **Funcionalidades del Check-in**
+
+#### **Para Huéspedes**
+- **Horario de Check-in**: 14:00 - 16:00 horas
+- **Validación de Reserva**: Verificación automática con número de reserva
+- **Verificación de Identidad**: Confirmación de documento de identidad
+- **Aceptación de Políticas**: Términos y condiciones obligatorios
+- **Confirmación de Estadía**: Sistema de confirmación dentro de 2 horas
+
+#### **Para Administradores**
+- **Check-in Manual**: Capacidad de realizar check-in fuera de horario
+- **Monitoreo en Tiempo Real**: Seguimiento de todos los check-ins del día
+- **Gestión de Tiempo**: Control de límites de confirmación de estadía
+- **Liberación Automática**: Sistema que libera habitaciones no confirmadas
+- **Reportes Detallados**: Información completa de cada check-in
+
+#### **Políticas de Check-in**
+1. **Horario Estándar**: 14:00 - 16:00 horas
+2. **Límite de Confirmación**: 2 horas después del check-in
+3. **Liberación Automática**: Habitaciones no confirmadas quedan disponibles
+4. **Validación de Documentos**: Verificación obligatoria de identidad
+5. **Aceptación de Términos**: Políticas del hotel obligatorias
+
+### **Flujo del Sistema**
+1. **Cliente realiza check-in** → Validación de datos
+2. **Sistema verifica horario** → 14:00-16:00 permitido
+3. **Confirmación de identidad** → Documento debe coincidir
+4. **Aceptación de políticas** → Términos obligatorios
+5. **Check-in exitoso** → Inicia contador de 2 horas
+6. **Confirmación de estadía** → Cliente o admin confirma
+7. **Liberación automática** → Si no se confirma en 2 horas
 
 **Desarrollado por**: Kevin Santiago Pinto Monsalve  

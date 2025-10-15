@@ -84,6 +84,71 @@
                 </table>
             </section>
 
+            <!-- Gestión de Check-in -->
+            <section class="admin-section">
+                <div class="section-header">
+                    <h2 class="section-title">🏨 Gestión de Check-in</h2>
+                    <button class="btn btn-checkin" onclick="showAdminCheckinForm()">Realizar Check-in Manual</button>
+                </div>
+
+                <div id="adminCheckinForm" style="display: none;" class="checkin-form-admin">
+                    <form id="adminCheckinFormElement">
+                        <h3>Check-in Manual por Administrador</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="adminReservationSelect">Seleccionar Reserva</label>
+                                <select id="adminReservationSelect" name="adminReservationSelect" required>
+                                    <option value="">Seleccione una reserva...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="adminCheckinTime">Hora de Check-in</label>
+                                <input type="datetime-local" id="adminCheckinTime" name="adminCheckinTime" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="adminGuestId">Documento del Huésped</label>
+                                <input type="text" id="adminGuestId" name="adminGuestId" placeholder="Verificar documento" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="adminNotes">Notas Adicionales</label>
+                                <textarea id="adminNotes" name="adminNotes" rows="2" placeholder="Observaciones del check-in..."></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="checkbox" id="adminPoliciesOverride" name="adminPoliciesOverride">
+                            <label for="adminPoliciesOverride">Omitir validación de horario de check-in (solo administrador)</label>
+                        </div>
+                        <div class="actions">
+                            <button type="submit" class="btn btn-success">Realizar Check-in</button>
+                            <button type="button" class="btn" onclick="hideAdminCheckinForm()">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Tabla de Check-ins del día -->
+                <div class="checkin-today">
+                    <h3>Check-ins de Hoy</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Reserva</th>
+                                <th>Cliente</th>
+                                <th>Habitación</th>
+                                <th>Hora Check-in</th>
+                                <th>Estado</th>
+                                <th>Tiempo Restante</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="todayCheckinsTable">
+                            <!-- Los check-ins de hoy se cargarán aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
             <!-- Gestión de Reservas -->
             <section class="admin-section">
                 <div class="section-header">
@@ -147,6 +212,7 @@
                         <ul>
                             <li><a href="../index.html">Inicio</a></li>
                             <li><a href="disponibilidad.html">Disponibilidad</a></li>
+                            <li><a href="checkin.html">Check-in</a></li>
                             <li><a href="ubicacion.html">Ubicación</a></li>
                             ${isLoggedIn ? `
                                 <li><span class="user-welcome">Hola, ${currentUser.fullName}</span></li>

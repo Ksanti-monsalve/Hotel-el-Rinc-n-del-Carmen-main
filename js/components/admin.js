@@ -10,12 +10,22 @@ document.addEventListener('DOMContentLoaded', () => {
     
     loadRooms();
     loadReservations();
+    loadTodayCheckins();
     
     // Configurar el formulario de habitaciones
     const roomForm = document.getElementById('roomForm');
     if (roomForm) {
         roomForm.addEventListener('submit', handleRoomFormSubmit);
     }
+    
+    // Configurar el formulario de check-in administrativo
+    const adminCheckinForm = document.getElementById('adminCheckinFormElement');
+    if (adminCheckinForm) {
+        adminCheckinForm.addEventListener('submit', handleAdminCheckinSubmit);
+    }
+    
+    // Actualizar check-ins cada minuto
+    setInterval(loadTodayCheckins, 60000);
 });
 
 function loadRooms() {
@@ -464,4 +474,398 @@ function showAlert(message, type = 'info') {
         alert.style.animation = 'slideOut 0.3s ease';
         setTimeout(() => alert.remove(), 300);
     }, 3000);
+}
+
+// ========== FUNCIONES DE GESTIÓN DE CHECK-IN ==========
+
+function showAdminCheckinForm() {
+    const form = document.getElementById('adminCheckinForm');
+    form.style.display = 'block';
+    
+    // Cargar reservas disponibles para check-in
+    loadAvailableReservationsForCheckin();
+    
+    // Establecer fecha y hora actual
+    const now = new Date();
+    const localDateTime = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
+    document.getElementById('adminCheckinTime').value = localDateTime;
+}
+
+function hideAdminCheckinForm() {
+    const form = document.getElementById('adminCheckinForm');
+    form.style.display = 'none';
+    document.getElementById('adminCheckinFormElement').reset();
+}
+
+function loadAvailableReservationsForCheckin() {
+    const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const rooms = JSON.parse(localStorage.getItem('rooms')) || [];
+    const today = new Date().toISOString().split('T')[0];
+    
+    // Filtrar reservas confirmadas para hoy que no han hecho check-in
+    const availableReservations = reservations.filter(res => 
+        res.status === 'confirmed' && 
+        res.checkIn === today
+    );
+    
+    const select = document.getElementById('adminReservationSelect');
+    select.innerHTML = '<option value="">Seleccione una reserva...</option>';
+    
+    availableReservations.forEach(reservation => {
+        const user = users.find(u => u.id === reservation.userId);
+        const room = rooms.find(r => r.id === reservation.roomId);
+        
+        if (user && room) {
+            const option = document.createElement('option');
+            option.value = reservation.id;
+            option.textContent = `${reservation.id} - ${user.fullName} - ${room.name} - ${reservation.guests} huéspedes`;
+            option.dataset.userId = user.id;
+            option.dataset.userEmail = user.email;
+            option.dataset.userIdentification = user.identification;
+            select.appendChild(option);
+        }
+    });
+    
+    // Listener para autocompletar datos del huésped
+    select.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        if (selectedOption.value) {
+            document.getElementById('adminGuestId').value = selectedOption.dataset.userIdentification || '';
+        }
+    });
+}
+
+async function handleAdminCheckinSubmit(event) {
+    event.preventDefault();
+    
+    const formData = new FormData(event.target);
+    const checkinData = {
+        reservationId: formData.get('adminReservationSelect'),
+        checkinTime: formData.get('adminCheckinTime'),
+        guestId: formData.get('adminGuestId'),
+        notes: formData.get('adminNotes'),
+        overrideTimeValidation: formData.get('adminPoliciesOverride') === 'on'
+    };
+    
+    if (!checkinData.reservationId) {
+        showAlert('Seleccione una reserva', 'error');
+        return;
+    }
+    
+    if (!checkinData.guestId) {
+        showAlert('Ingrese el documento del huésped', 'error');
+        return;
+    }
+    
+    try {
+        const result = await processAdminCheckin(checkinData);
+        
+        if (result.success) {
+            showAlert('Check-in realizado exitosamente por administrador', 'success');
+            hideAdminCheckinForm();
+            loadTodayCheckins();
+            loadReservations();
+        } else {
+            showAlert(result.message, 'error');
+        }
+    } catch (error) {
+        console.error('Error en check-in administrativo:', error);
+        showAlert('Error interno del sistema', 'error');
+    }
+}
+
+async function processAdminCheckin(checkinData) {
+    try {
+        const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        
+        const reservationIndex = reservations.findIndex(r => r.id === checkinData.reservationId);
+        
+        if (reservationIndex === -1) {
+            return { success: false, message: 'Reserva no encontrada' };
+        }
+        
+        const reservation = reservations[reservationIndex];
+        const user = users.find(u => u.id === reservation.userId);
+        
+        if (!user) {
+            return { success: false, message: 'Usuario no encontrado' };
+        }
+        
+        // Verificar documento
+        if (user.identification !== checkinData.guestId) {
+            return { success: false, message: 'El documento no coincide con la reserva' };
+        }
+        
+        // Verificar estado
+        if (reservation.status === 'checked-in') {
+            return { success: false, message: 'Ya se ha realizado el check-in para esta reserva' };
+        }
+        
+        // Verificar horario (solo si no se omite la validación)
+        if (!checkinData.overrideTimeValidation) {
+            const checkinTime = new Date(checkinData.checkinTime);
+            const checkinHour = checkinTime.getHours() + (checkinTime.getMinutes() / 60);
+            
+            if (checkinHour < 14 || checkinHour >= 16) {
+                return { success: false, message: 'Check-in fuera del horario permitido (14:00 - 16:00). Use la opción de omitir validación si es necesario.' };
+            }
+        }
+        
+        // Realizar check-in
+        reservations[reservationIndex] = {
+            ...reservation,
+            status: 'checked-in',
+            checkinTime: checkinData.checkinTime,
+            checkinData: {
+                guestId: checkinData.guestId,
+                notes: checkinData.notes,
+                checkinBy: 'admin',
+                adminOverride: checkinData.overrideTimeValidation,
+                checkinTimestamp: Date.now()
+            }
+        };
+        
+        localStorage.setItem('reservations', JSON.stringify(reservations));
+        
+        return { 
+            success: true, 
+            message: 'Check-in realizado exitosamente',
+            reservation: reservations[reservationIndex]
+        };
+        
+    } catch (error) {
+        console.error('Error en processAdminCheckin:', error);
+        return { success: false, message: 'Error interno del sistema' };
+    }
+}
+
+function loadTodayCheckins() {
+    const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const rooms = JSON.parse(localStorage.getItem('rooms')) || [];
+    const today = new Date().toISOString().split('T')[0];
+    
+    // Filtrar check-ins de hoy
+    const todayCheckins = reservations.filter(res => 
+        res.status === 'checked-in' && 
+        res.checkIn === today
+    );
+    
+    const tableBody = document.getElementById('todayCheckinsTable');
+    if (!tableBody) return;
+    
+    tableBody.innerHTML = '';
+    
+    if (todayCheckins.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No hay check-ins registrados para hoy.</td></tr>';
+        return;
+    }
+    
+    todayCheckins.forEach(reservation => {
+        const user = users.find(u => u.id === reservation.userId);
+        const room = rooms.find(r => r.id === reservation.roomId);
+        
+        if (user && room) {
+            const checkinTime = new Date(reservation.checkinTime);
+            const timeRemaining = calculateTimeRemaining(checkinTime);
+            const isConfirmed = localStorage.getItem(`room_confirmation_${reservation.id}`);
+            
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${reservation.id}</td>
+                <td>${user.fullName}</td>
+                <td>${room.name}</td>
+                <td>${formatDateTime(reservation.checkinTime)}</td>
+                <td>
+                    <span class="status-badge ${isConfirmed ? 'confirmed' : 'pending'}">
+                        ${isConfirmed ? '✅ Confirmado' : '⏳ Pendiente'}
+                    </span>
+                </td>
+                <td>
+                    <span class="time-remaining ${timeRemaining.expired ? 'expired' : timeRemaining.warning ? 'warning' : 'safe'}">
+                        ${timeRemaining.text}
+                    </span>
+                </td>
+                <td>
+                    <div class="action-buttons">
+                        ${!isConfirmed ? `
+                            <button onclick="confirmGuestStay('${reservation.id}')" class="btn btn-success btn-sm">
+                                Confirmar Estadía
+                            </button>
+                        ` : ''}
+                        <button onclick="viewCheckinDetails('${reservation.id}')" class="btn btn-secondary btn-sm">
+                            Ver Detalles
+                        </button>
+                        ${timeRemaining.expired && !isConfirmed ? `
+                            <button onclick="releaseRoom('${reservation.id}')" class="btn btn-danger btn-sm">
+                                Liberar Habitación
+                            </button>
+                        ` : ''}
+                    </div>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        }
+    });
+}
+
+function calculateTimeRemaining(checkinTime) {
+    const now = new Date();
+    const checkin = new Date(checkinTime);
+    const deadline = new Date(checkin.getTime() + (2 * 60 * 60 * 1000)); // 2 horas después
+    const remaining = deadline - now;
+    
+    if (remaining <= 0) {
+        return { expired: true, text: 'Tiempo expirado', warning: false };
+    }
+    
+    const hours = Math.floor(remaining / (1000 * 60 * 60));
+    const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+    
+    const warning = remaining <= (30 * 60 * 1000); // Advertencia en últimos 30 minutos
+    
+    return {
+        expired: false,
+        warning: warning,
+        text: `${hours}h ${minutes}m restantes`
+    };
+}
+
+function formatDateTime(dateTimeString) {
+    const date = new Date(dateTimeString);
+    return date.toLocaleString('es-ES', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+function confirmGuestStay(reservationId) {
+    if (confirm('¿Confirmar la estadía del huésped? Esto evitará la liberación automática de la habitación.')) {
+        const confirmationKey = `room_confirmation_${reservationId}`;
+        localStorage.setItem(confirmationKey, 'confirmed');
+        
+        showAlert('Estadía confirmada exitosamente', 'success');
+        loadTodayCheckins();
+    }
+}
+
+function viewCheckinDetails(reservationId) {
+    const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const rooms = JSON.parse(localStorage.getItem('rooms')) || [];
+    
+    const reservation = reservations.find(r => r.id === reservationId);
+    const user = users.find(u => u.id === reservation.userId);
+    const room = rooms.find(r => r.id === reservation.roomId);
+    
+    if (!reservation || !user || !room) {
+        showAlert('No se pudieron cargar los detalles', 'error');
+        return;
+    }
+    
+    const isConfirmed = localStorage.getItem(`room_confirmation_${reservationId}`);
+    const checkinData = reservation.checkinData || {};
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal checkin-details-modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Detalles del Check-in</h2>
+                <span class="close" onclick="this.parentElement.parentElement.parentElement.remove()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <strong>Reserva:</strong>
+                        <span>${reservation.id}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Cliente:</strong>
+                        <span>${user.fullName}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Email:</strong>
+                        <span>${user.email}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Documento:</strong>
+                        <span>${user.identification}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Habitación:</strong>
+                        <span>${room.name}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Huéspedes:</strong>
+                        <span>${reservation.guests}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Check-in:</strong>
+                        <span>${formatDateTime(reservation.checkinTime)}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Check-out:</strong>
+                        <span>${formatDate(reservation.checkOut)}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Estado:</strong>
+                        <span class="status-badge ${isConfirmed ? 'confirmed' : 'pending'}">
+                            ${isConfirmed ? '✅ Confirmado' : '⏳ Pendiente de confirmación'}
+                        </span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Realizado por:</strong>
+                        <span>${checkinData.checkinBy === 'admin' ? '👨‍💼 Administrador' : '👤 Cliente'}</span>
+                    </div>
+                    ${checkinData.notes ? `
+                        <div class="detail-item full-width">
+                            <strong>Notas:</strong>
+                            <span>${checkinData.notes}</span>
+                        </div>
+                    ` : ''}
+                    ${checkinData.adminOverride ? `
+                        <div class="detail-item full-width">
+                            <strong>⚠️ Observación:</strong>
+                            <span>Check-in realizado fuera del horario estándar con autorización administrativa</span>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+function releaseRoom(reservationId) {
+    if (confirm('¿Está seguro de liberar esta habitación? Esta acción cancelará la reserva y liberará la habitación para otros huéspedes.')) {
+        const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+        
+        const updatedReservations = reservations.map(r => {
+            if (r.id === reservationId) {
+                return { 
+                    ...r, 
+                    status: 'auto-cancelled', 
+                    reason: 'Liberada por administrador - No confirmó estadía',
+                    releasedAt: new Date().toISOString()
+                };
+            }
+            return r;
+        });
+        
+        localStorage.setItem('reservations', JSON.stringify(updatedReservations));
+        
+        // Limpiar confirmación si existe
+        localStorage.removeItem(`room_confirmation_${reservationId}`);
+        
+        showAlert('Habitación liberada exitosamente', 'success');
+        loadTodayCheckins();
+        loadReservations();
+    }
 }

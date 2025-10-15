@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check-in de Huéspedes - Hotel el Rincón del Carmen</title>
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏨</text></svg>">
+    <link rel="stylesheet" href="../css/common.css?v=2.0">
+    <link rel="stylesheet" href="../css/checkin.css?v=1.0">
+</head>
+<body>
+    <header id="dynamic-header">
+        <!-- El header se actualizará dinámicamente aquí -->
+    </header>
+
+    <main class="checkin-container">
+        <div class="checkin-header">
+            <h1>Check-in de Huéspedes</h1>
+            <p>Hotel el Rincón del Carmen desea realizar el check-in de sus huéspedes en el sistema de información.</p>
+        </div>
+
+        <div class="checkin-info">
+            <div class="info-card">
+                <h2>📅 Información Importante</h2>
+                <div class="info-content">
+                    <div class="info-item">
+                        <strong>Hora de Check-in:</strong> 14:00 (2:00 PM)
+                    </div>
+                    <div class="info-item">
+                        <strong>Límite de entrega:</strong> 15 octubre 2025 - 03:00 pm
+                    </div>
+                    <div class="info-item warning">
+                        <strong>⚠️ Política de Disponibilidad:</strong><br>
+                        Si el usuario no hace efectiva la reserva dos horas después de que inicie el check-in (16:00), la habitación quedará disponible para que otra persona la pueda tomar.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="checkin-form-container">
+            <form id="checkinForm" class="checkin-form">
+                <h2>Realizar Check-in</h2>
+                
+                <div class="form-group">
+                    <label for="reservationId">Número de Reserva</label>
+                    <input type="text" id="reservationId" name="reservationId" placeholder="Ingrese su número de reserva" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="guestEmail">Email del Huésped</label>
+                    <input type="email" id="guestEmail" name="guestEmail" placeholder="correo@ejemplo.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="guestId">Documento de Identidad</label>
+                    <input type="text" id="guestId" name="guestId" placeholder="Número de documento" required>
+                </div>
+
+                <div class="policies-section">
+                    <h3>Condiciones y Políticas del Hotel</h3>
+                    <div class="policies-content">
+                        <p>Su misión es agregar las condiciones y políticas del hotel y que los clientes puedan aceptar estas. Puede ser un link que lleve a una nueva página.</p>
+                        <div class="policies-links">
+                            <a href="#" onclick="showPolicies()" class="policy-link">📋 Ver Términos y Condiciones</a>
+                            <a href="#" onclick="showPrivacyPolicy()" class="policy-link">🔒 Política de Privacidad</a>
+                        </div>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="acceptPolicies" name="acceptPolicies" required>
+                        <label for="acceptPolicies">
+                            Acepto los términos y condiciones del hotel, así como las políticas establecidas
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-checkin">
+                    <span class="btn-text">Realizar Check-in</span>
+                    <span class="btn-icon">🏨</span>
+                </button>
+            </form>
+        </div>
+
+        <div class="admin-section">
+            <h2>Gestión de Reservas</h2>
+            <p>También, se debe agregar a la gestión de reservas del panel de gestión administrativa, un formulario donde se pueda hacer el check-in.</p>
+            <a href="admin.html" class="btn-admin">Ir al Panel Administrativo</a>
+        </div>
+
+        <div class="repository-section">
+            <h2>Ruta del Repositorio</h2>
+            <div class="repo-info">
+                <div class="form-group">
+                    <label for="repoUrl">URL</label>
+                    <input type="url" id="repoUrl" placeholder="Asegúrate de agregar la URL del repositorio del reto para ser calificado" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="repoHash">Hash</label>
+                    <input type="text" id="repoHash" placeholder="Hash del commit" readonly>
+                </div>
+                <button type="button" class="btn-update" onclick="updateRepositoryInfo()">
+                    Actualizar Información
+                </button>
+            </div>
+        </div>
+
+        <div class="expected-result">
+            <h2>Resultado Esperado</h2>
+            <div class="result-content">
+                <p>El camper debe hacer uso de todo lo aprendido durante la ruta de aprendizaje. El uso de buenas prácticas es de vital importancia.</p>
+                <p>Este examen complementa al proyecto Hotel el Rincón del Carmen, por lo cual, todo lo solicitado debe ser creado sobre este.</p>
+                <p><strong>Se debe agregar al proyecto las modificaciones propuestas para lograr la gestión de check-in de sus huéspedes.</strong></p>
+                <p>Recuerde cargar los cambios al proyecto en GitHub.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Hotel el Rincón del Carmen</h3>
+                <p>Tu refugio perfecto en la ciudad</p>
+            </div>
+            <div class="footer-section">
+                <h4>Contacto</h4>
+                <p>📞 +57 301 333 7644</p>
+                <p>✉️ Carmen@rincondelcarmen.com</p>
+                <p>📍 Calle carmen #224</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Hotel el Rincón del Carmen. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Modal para políticas -->
+    <div id="policiesModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closePoliciesModal()">&times;</span>
+            <h2>Términos y Condiciones</h2>
+            <div class="policies-text">
+                <h3>1. Políticas de Check-in</h3>
+                <p>• El check-in se realiza a partir de las 14:00 horas.</p>
+                <p>• Los huéspedes deben presentar documento de identidad válido.</p>
+                <p>• La reserva debe ser confirmada mediante el sistema en línea.</p>
+                
+                <h3>2. Política de Disponibilidad</h3>
+                <p>• Si no se efectúa el check-in dentro de las 2 horas posteriores al horario establecido (16:00), la habitación quedará disponible para otros huéspedes.</p>
+                <p>• Esta política asegura la máxima ocupación y satisfacción de nuestros clientes.</p>
+                
+                <h3>3. Servicios Incluidos</h3>
+                <p>• WiFi gratuito en todas las áreas del hotel</p>
+                <p>• Acceso a zonas comunes y servicios básicos</p>
+                <p>• Servicio de recepción 24 horas</p>
+                
+                <h3>4. Responsabilidades del Huésped</h3>
+                <p>• Mantener el orden y limpieza en las habitaciones</p>
+                <p>• Respetar las normas de convivencia del hotel</p>
+                <p>• Informar cualquier daño o incidente al personal</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/components/checkin.js"></script>
+    
+    <script>
+        // Función para actualizar el header dinámicamente
+        function updateHeader() {
+            const currentUser = getCurrentUser();
+            const isAdmin = currentUser && currentUser.role === 'admin';
+            const isLoggedIn = currentUser !== null;
+            const header = document.getElementById('dynamic-header');
+            
+            if (header) {
+                header.innerHTML = `
+                    <nav>
+                        <div class="logo">🏨 Hotel el Rincón del Carmen</div>
+                        <ul>
+                            <li><a href="../index.html">Inicio</a></li>
+                            <li><a href="disponibilidad.html">Disponibilidad</a></li>
+                            <li><a href="checkin.html" class="active">Check-in</a></li>
+                            <li><a href="ubicacion.html">Ubicación</a></li>
+                            ${isLoggedIn ? `
+                                <li><span class="user-welcome">Hola, ${currentUser.fullName}</span></li>
+                                ${isAdmin ? `<li><a href="admin.html">Panel Admin</a></li>` : `<li><a href="mis-reservas.html">Mis Reservas</a></li>`}
+                                <li><a href="#" onclick="handleLogout()">Cerrar Sesión</a></li>
+                            ` : `
+                                <li><a href="login.html">Iniciar Sesión</a></li>
+                            `}
+                        </ul>
+                    </nav>
+                `;
+            }
+        }
+        
+        function handleLogout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                logout();
+                showAlert('Has cerrado sesión correctamente.', 'info');
+                setTimeout(() => {
+                    window.location.href = '../index.html';
+                }, 1500);
+            }
+        }
+        
+        // Actualizar header cuando se carga la página
+        document.addEventListener('DOMContentLoaded', updateHeader);
+        
+        // Funciones para mostrar políticas
+        function showPolicies() {
+            document.getElementById('policiesModal').style.display = 'block';
+        }
+        
+        function showPrivacyPolicy() {
+            alert('Política de Privacidad: Hotel el Rincón del Carmen se compromete a proteger la información personal de nuestros huéspedes de acuerdo con las leyes de protección de datos vigentes.');
+        }
+        
+        function closePoliciesModal() {
+            document.getElementById('policiesModal').style.display = 'none';
+        }
+        
+        // Función para actualizar información del repositorio
+        function updateRepositoryInfo() {
+            // Simular obtención de información del repositorio
+            const repoUrl = 'https://github.com/usuario/hotel-rincon-del-carmen';
+            const repoHash = generateHash();
+            
+            document.getElementById('repoUrl').value = repoUrl;
+            document.getElementById('repoHash').value = repoHash;
+            
+            showAlert('Información del repositorio actualizada correctamente', 'success');
+        }
+        
+        function generateHash() {
+            return 'commit-' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+        }
+        
+        // Cerrar modal al hacer click fuera
+        window.onclick = function(event) {
+            const modal = document.getElementById('policiesModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

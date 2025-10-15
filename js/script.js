@@ -404,6 +404,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Actualizar información de habitaciones
     updateRoomsInfo();
+    
+    // Inicializar información del repositorio
+    initializeRepositoryInfo();
 });
 
 // Asegurar que existe un usuario de prueba
@@ -451,4 +454,74 @@ function createTestReservation() {
         localStorage.setItem('reservations', JSON.stringify(reservations));
         console.log('Reserva de prueba creada:', testReservation);
     }
+}
+
+// ========== FUNCIONES DE GESTIÓN DE REPOSITORIO ==========
+
+// Función para inicializar información del repositorio
+function initializeRepositoryInfo() {
+    if (!localStorage.getItem('repository_url')) {
+        const defaultUrl = 'https://github.com/usuario/hotel-rincon-del-carmen';
+        localStorage.setItem('repository_url', defaultUrl);
+    }
+    
+    if (!localStorage.getItem('repository_hash')) {
+        const initialHash = generateRepositoryHash();
+        localStorage.setItem('repository_hash', initialHash);
+    }
+}
+
+// Función para generar hash del repositorio
+function generateRepositoryHash() {
+    const timestamp = Date.now().toString(36);
+    const randomStr = Math.random().toString(36).substr(2, 9);
+    return `commit-${randomStr}${timestamp}`;
+}
+
+// Función para actualizar información del repositorio
+function updateRepositoryInfo(url, hash) {
+    if (url) {
+        localStorage.setItem('repository_url', url);
+    }
+    
+    if (hash) {
+        localStorage.setItem('repository_hash', hash);
+    } else {
+        // Generar nuevo hash si no se proporciona
+        const newHash = generateRepositoryHash();
+        localStorage.setItem('repository_hash', newHash);
+    }
+    
+    return {
+        url: localStorage.getItem('repository_url'),
+        hash: localStorage.getItem('repository_hash')
+    };
+}
+
+// Función para obtener información del repositorio
+function getRepositoryInfo() {
+    return {
+        url: localStorage.getItem('repository_url') || '',
+        hash: localStorage.getItem('repository_hash') || '',
+        lastUpdated: localStorage.getItem('repository_last_updated') || new Date().toISOString()
+    };
+}
+
+// Función para simular commit al repositorio
+function commitToRepository(message) {
+    const newHash = generateRepositoryHash();
+    const timestamp = new Date().toISOString();
+    
+    localStorage.setItem('repository_hash', newHash);
+    localStorage.setItem('repository_last_updated', timestamp);
+    localStorage.setItem('repository_last_commit_message', message);
+    
+    console.log(`📝 Commit simulado: ${message}`);
+    console.log(`🔗 Nuevo hash: ${newHash}`);
+    
+    return {
+        hash: newHash,
+        message: message,
+        timestamp: timestamp
+    };
 }
